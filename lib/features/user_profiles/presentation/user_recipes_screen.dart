@@ -5,6 +5,7 @@ import 'package:myapp/features/user_profiles/data/model/user_model.dart';
 import 'package:myapp/features/user_profiles/domain/user_recipes/user_recipes_bloc.dart';
 import 'package:myapp/router/app_router.dart';
 
+import '../../../core/common/widgets/recipe_compact_widget.dart';
 import '../../../core/common/widgets/recipe_widget.dart';
 
 @RoutePage()
@@ -28,14 +29,8 @@ class UserRecipesScreen extends StatelessWidget {
               return const Center(child: Text('No Favorites Yet!'));
             }
 
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Number of columns
-                crossAxisSpacing: 8.0, // Spacing between columns
-                mainAxisSpacing: 8.0, // Spacing between rows
-                childAspectRatio:
-                    3 / 4, // Width-to-height ratio of each grid item
-              ),
+            return ListView.builder(
+              shrinkWrap: true,
               padding: const EdgeInsets.all(8.0), // Add padding around the grid
               itemCount: state.userRecipes.length,
               itemBuilder: (context, index) {
@@ -47,7 +42,7 @@ class UserRecipesScreen extends StatelessWidget {
                   },
                   child: Hero(
                     tag: "recipe-${recipe.id}",
-                    child: RecipeWidget(
+                    child: RecipeCompactWidget(
                       recipe: recipe,
                       showEdit: true,
                     ),

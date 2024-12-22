@@ -6,6 +6,7 @@ import '../../../injection/service_locator.dart';
 import '../../../features/recipes/data/model/recipe_model.dart';
 import '../bloc/like/like_bloc.dart';
 import 'recipe_action_bottom_drawer.dart';
+import 'recipe_image_widget.dart';
 
 class RecipeCompactWidget extends StatelessWidget {
   final Recipe recipe;
@@ -35,20 +36,19 @@ class RecipeCompactWidget extends StatelessWidget {
         children: [
           // Thumbnail Image
           ClipRRect(
-            borderRadius: const BorderRadius.horizontal(left: Radius.circular(10.0)),
-            child: recipe.thumbnailUrl.isNotEmpty
-                ? Image.network(
-                    recipe.thumbnailUrl,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  )
-                : Image.asset(
-                    'assets/images/placeholders/recipe_placeholder.png',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
+            borderRadius:
+                const BorderRadius.horizontal(left: Radius.circular(10.0)),
+            child: RecipeImageWidget(
+              source: recipe.thumbnailUrl.isNotEmpty
+                  ? recipe.thumbnailUrl
+                  : '', // Use the thumbnail URL or fallback to an empty string
+              width: 100,
+              height: 100,
+              placeholder: const Center(child: CircularProgressIndicator()),
+              errorWidget: const Center(child: Icon(Icons.error)),
+              useCloudinary: recipe.thumbnailUrl
+                  .isNotEmpty, // Set to true if using Cloudinary URL
+            ),
           ),
           const SizedBox(width: 10.0),
           // Recipe Info
@@ -114,8 +114,8 @@ class RecipeCompactWidget extends StatelessWidget {
           Column(
             children: [
               BlocProvider(
-                create: (_) => getIt<LikeBloc>()
-                  ..add(FetchLikeStatus(recipe.id)),
+                create: (_) =>
+                    getIt<LikeBloc>()..add(FetchLikeStatus(recipe.id)),
                 child: BlocBuilder<LikeBloc, LikeState>(
                   builder: (context, likeState) {
                     if (likeState is LikeLoading) {

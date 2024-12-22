@@ -15,6 +15,8 @@ import 'package:myapp/features/user_profiles/domain/user_recipes/user_recipes_bl
 import 'package:myapp/injection/service_locator.dart';
 import 'package:myapp/router/app_router.dart';
 
+import '../../../core/common/widgets/profile_image_widget.dart';
+import '../../../core/common/widgets/recipe_compact_widget.dart';
 import '../../auth/domain/auth_state.dart';
 import '../domain/follower/follower_bloc.dart';
 
@@ -36,30 +38,27 @@ class ProfileScreen extends StatelessWidget {
             return Text("Error: ${state.message}");
           } else if (state is ProfileLoaded) {
             final user = state.user;
-            context.read<UserRecipeBloc>().add(FetchUserRecipes(userModel: user));
-            context.read<FollowingBloc>().add(CountFollowings(userId: user!.uid));
+            context
+                .read<UserRecipeBloc>()
+                .add(FetchUserRecipes(userModel: user));
+            context
+                .read<FollowingBloc>()
+                .add(CountFollowings(userId: user!.uid));
             context.read<FollowerBloc>().add(CountFollowers(userId: user.uid));
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: ListView(
                 children: [
                   // Profile Picture and Name
-                  CircleAvatar(
-                    radius: 50.0,
-                    backgroundColor: Colors.grey[200], // Background color for better visibility
-                    child: ClipOval(
-                      child: user.photoURL != null
-                          ? Image.network(
-                              user.photoURL!,
-                              width: 100, // Match twice the radius for better fitting
-                              height: 100,
-                              fit: BoxFit.cover, // Ensure the image scales nicely
-                            )
-                          : const Icon(
-                              Icons.person,
-                              size: 50,
-                            ),
-                    ),
+                  ProfileImageWidget(
+                    source:
+                        user.photoURL!, // Cloudinary public ID or network URL
+                    size: 120, // Circular size (diameter)
+                    placeholder:
+                        const Center(child: CircularProgressIndicator()),
+                    errorWidget: const Icon(Icons.account_circle, size: 80),
+                    useCloudinary:
+                        true, // Toggle between Cloudinary or network image
                   ),
                   const SizedBox(height: 16.0),
                   Text(
@@ -159,15 +158,9 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildGridRecipeList(List<Recipe> recipes, UserModel user) {
-    return GridView.builder(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 8.0,
-        crossAxisSpacing: 8.0,
-        childAspectRatio: 0.75,
-      ),
       itemCount: recipes.length + 1,
       itemBuilder: (context, index) {
         if (index == recipes.length) {
@@ -190,7 +183,7 @@ class ProfileScreen extends StatelessWidget {
                 }
               });
             },
-            child: RecipeWidget(
+            child: RecipeCompactWidget(
               recipe: recipe,
               showEdit: true,
               onRecipeUpdated: (updatedRecipe) {

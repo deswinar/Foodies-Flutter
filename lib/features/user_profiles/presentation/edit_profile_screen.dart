@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:myapp/features/user_profiles/data/model/user_model.dart';
 import 'package:myapp/core/services/cloudinary_service.dart';
+import '../../../core/common/widgets/profile_image_widget.dart';
 import '../domain/profile/profile_bloc.dart';
 
 @RoutePage()
@@ -58,7 +59,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       try {
         // If a new image is selected, upload it to Cloudinary
         if (_selectedImage != null) {
-          uploadedPhotoUrl = await _cloudinaryService.uploadImage(_selectedImage!);
+          uploadedPhotoUrl =
+              await _cloudinaryService.uploadImage(_selectedImage!);
         }
 
         // Prepare the updated profile
@@ -137,14 +139,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 GestureDetector(
                   onTap: _showImageSourceSelection,
-                  child: CircleAvatar(
-                    radius: 50.0,
-                    backgroundImage: _selectedImage != null
-                        ? FileImage(_selectedImage!)
-                        : (_photoURL != null ? NetworkImage(_photoURL!) : null),
-                    child: _selectedImage == null && _photoURL == null
-                        ? const Icon(Icons.person, size: 50)
-                        : null,
+                  child: ProfileImageWidget(
+                    source: _selectedImage != null
+                        ? _selectedImage!
+                            .path // Use local file path for selected image
+                        : (_photoURL ??
+                            ''), // Use photo URL or empty string if null
+                    size: 100, // Diameter of the profile image
+                    placeholder: const Icon(Icons.person, size: 50),
+                    errorWidget: const Icon(Icons.error, size: 50),
+                    useCloudinary: _selectedImage == null &&
+                        _photoURL !=
+                            null, // Use Cloudinary only if no local file is selected
                   ),
                 ),
                 const SizedBox(height: 16.0),

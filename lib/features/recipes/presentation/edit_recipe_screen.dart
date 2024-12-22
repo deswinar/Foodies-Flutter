@@ -135,9 +135,11 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                     });
                   },
                   onImageRemoved: (path) {
+                    print(_uploadedImages.length);
                     setState(() {
                       _uploadedImages.remove(path); // Remove specific image
                     });
+                    print(_uploadedImages.length);
                   },
                   onClearImages: () {
                     setState(() {

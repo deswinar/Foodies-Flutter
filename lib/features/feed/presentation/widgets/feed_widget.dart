@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/common/widgets/recipe_compact_widget.dart';
 import '../../../../core/common/widgets/recipe_widget.dart';
 import '../../../../injection/service_locator.dart';
 import '../../../../router/app_router.dart';
@@ -180,16 +181,10 @@ class FeedWidget extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
-        GridView.builder(
+        ListView.builder(
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           itemCount: recipes.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 8.0,
-            crossAxisSpacing: 8.0,
-            childAspectRatio: 0.8,
-          ),
           itemBuilder: (context, index) {
             final recipe = recipes[index];
             return GestureDetector(
@@ -200,7 +195,8 @@ class FeedWidget extends StatelessWidget {
               },
               child: Hero(
                 tag: "recipe-${recipe.id}",
-                child: RecipeWidget(recipe: recipe),
+                child: RecipeCompactWidget(
+                    recipe: recipe), // Replaced with RecipeCompactWidget
               ),
             );
           },

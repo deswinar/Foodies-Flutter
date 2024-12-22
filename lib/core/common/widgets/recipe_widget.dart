@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myapp/core/common/widgets/profile_image_widget.dart';
 import 'like_button.dart';
 import '../../../injection/service_locator.dart';
 import '../../../features/recipes/data/model/recipe_model.dart';
 import '../bloc/like/like_bloc.dart';
 import 'recipe_action_bottom_drawer.dart';
+import 'recipe_image_widget.dart';
 
 class RecipeWidget extends StatelessWidget {
   final Recipe recipe;
@@ -39,23 +41,14 @@ class RecipeWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Recipe Image
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(12.0),
-                ),
-                child: recipe.thumbnailUrl.isNotEmpty
-                    ? Image.network(
-                        recipe.thumbnailUrl,
-                        width: double.infinity,
-                        height: imageHeight,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        'assets/images/placeholders/recipe_placeholder.png',
-                        width: double.infinity,
-                        height: imageHeight,
-                        fit: BoxFit.cover,
-                      ),
+              RecipeImageWidget(
+                source: recipe.thumbnailUrl, // Cloudinary public ID
+                width: 250,
+                height: 250,
+                placeholder: const Center(child: CircularProgressIndicator()),
+                errorWidget: const Center(child: Icon(Icons.error)),
+                useCloudinary:
+                    true, // Toggle this to false to use a network image.
               ),
               // Recipe Details
               Padding(
@@ -95,14 +88,17 @@ class RecipeWidget extends StatelessWidget {
                     const SizedBox(height: 8.0),
                     Row(
                       children: [
-                        CircleAvatar(
-                          radius: avatarRadius,
-                          backgroundImage: recipe?.user?.photoURL != null
-                              ? NetworkImage(recipe.user!.photoURL!)
-                              : null,
-                          child: recipe?.user?.photoURL == null
-                              ? const Icon(Icons.person)
-                              : null,
+                        ProfileImageWidget(
+                          source: recipe?.user?.photoURL ??
+                              '', // Use photoURL if available; fallback to empty string
+                          size:
+                              avatarRadius * 2, // Diameter is twice the radius
+                          placeholder: const Icon(Icons.person,
+                              size: 50), // Icon for placeholder
+                          errorWidget: const Icon(Icons.error,
+                              size: 50), // Icon for error handling
+                          useCloudinary: recipe?.user?.photoURL !=
+                              null, // Use Cloudinary only if photoURL is provided
                         ),
                         const SizedBox(width: 8.0),
                         Expanded(
