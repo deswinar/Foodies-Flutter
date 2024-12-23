@@ -1,4 +1,6 @@
 // Suggested code may be subject to a license. Learn more: ~LicenseLog:1685030342.
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,10 +40,14 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
   String? _selectedCountry;
 
   String? _thumbnailImage;
-  late List<String> _uploadedImages;
+  late List<dynamic> _uploadedImages;
   late List<String> _ingredients;
   late List<String> _steps;
   late List<String> _tags;
+
+  List<String> currentImages = [];
+  List<dynamic> imagesToAdd = [];
+  List<String> imagesToDelete = [];
 
   @override
   void initState() {
@@ -76,13 +82,18 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
     context
         .read<RecipeBloc>()
         .add(FetchRecipeByIdEvent(recipeId: widget.recipe.id));
-    return BlocBuilder<RecipeBloc, RecipeState>(builder: (context, state) {
-      if (state is RecipeInitialState) {
-      } else if (state is RecipeUpdatingState) {
-        return const Center(child: CircularProgressIndicator());
+    return BlocConsumer<RecipeBloc, RecipeState>(listener: (context, state) {
+      if (state is RecipeUpdatedState) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully!')),
+        );
+        Navigator.of(context).pop(state.recipe); // Pass updated recipe
       } else if (state is RecipeErrorState) {
-        return Center(child: Text('Error: ${state.errorMessage}'));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(state.errorMessage)),
+        );
       }
+    }, builder: (context, state) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Edit Recipe'),
@@ -129,20 +140,25 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                 ImageUploaderEdit(
                   uploadedImages: _uploadedImages,
                   onImagePicked: (file) {
+                    print("before");
                     setState(() {
+                      imagesToAdd.add(file);
                       _uploadedImages.add(file);
-                      _thumbnailImage ??= _uploadedImages.first;
+                      _thumbnailImage ?? _uploadedImages.first;
                     });
+                    print("after");
                   },
                   onImageRemoved: (path) {
-                    print(_uploadedImages.length);
+                    print(_uploadedImages);
                     setState(() {
+                      imagesToDelete.add(path);
                       _uploadedImages.remove(path); // Remove specific image
                     });
-                    print(_uploadedImages.length);
+                    print(_uploadedImages);
                   },
                   onClearImages: () {
                     setState(() {
+                      imagesToAdd.clear();
                       _uploadedImages.clear();
                       _thumbnailImage = null;
                     });
@@ -225,20 +241,17 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                     if (_formKey.currentState?.validate() ?? false) {
                       try {
                         // Call the RecipeUpdateService to handle the update
-                        final updateService = RecipeUpdateService();
+                        // final updateService = RecipeUpdateService();
 
-                        final updatedRecipe = await updateService.updateRecipe(
-                          oldRecipe: widget.recipe, // Pass the existing recipe
+                        final updatedRecipe = widget.recipe.copyWith(
                           title: _titleController.text,
                           description: _descriptionController.text,
                           ingredients:
                               _ingredients, // Example: List of ingredients
                           steps: _steps, // Example: List of steps
-                          tags: _tags, // Example: List of tags
-                          newImages: _uploadedImages +
-                              widget.recipe
-                                  .imageUrls, // Combine new and old images
-                          newThumbnail: _thumbnailImage ??
+                          tags:
+                              _tags, // Example: List of tags // Combine new and old images
+                          thumbnailUrl: _thumbnailImage ??
                               widget.recipe
                                   .thumbnailUrl, // New or existing thumbnail
                           youtubeVideoUrl: _youtubeUrlController.text,
@@ -246,14 +259,16 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                           country: _selectedCountry ?? '',
                           portion: _portionController.text,
                           cookingDuration: _cookingDuration ?? '0',
+                          updatedAt: DateTime.now(),
                         );
 
-                        context
-                            .read<RecipeBloc>()
-                            .add(UpdateRecipeEvent(recipe: updatedRecipe));
+                        context.read<RecipeBloc>().add(UpdateRecipeEvent(
+                            recipe: updatedRecipe,
+                            imagesToAdd: imagesToAdd,
+                            imagesToDelete: imagesToDelete));
 
-                        Navigator.of(context)
-                            .pop(updatedRecipe); // Pass updated recipe
+                        // Navigator.of(context)
+                        //     .pop(updatedRecipe); // Pass updated recipe
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Error: ${e.toString()}')),
@@ -264,7 +279,9 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('Save Changes'),
+                  child: state is RecipeUpdatingState
+                      ? const Center(child: CircularProgressIndicator())
+                      : const Text('Save Changes'),
                 ),
               ],
             ),

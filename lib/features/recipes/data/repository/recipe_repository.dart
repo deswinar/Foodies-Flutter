@@ -1,5 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myapp/features/recipes/data/model/recipe_model.dart';
+
+import '../../../../core/services/cloudinary_service.dart';
+import '../../../../injection/service_locator.dart';
+import '../../domain/services/recipe_update_service.dart';
 
 class RecipeRepository {
   final FirebaseFirestore firestore;
@@ -39,7 +45,33 @@ class RecipeRepository {
   }
 
   /// Updates an existing recipe in Firestore.
-  Future<void> updateRecipe(Recipe recipe) async {
+  Future<Recipe> updateRecipe(Recipe recipe, List<dynamic> imagesToAdd, List<String> imagesToDelete) async {
+    final cloudinaryService = getIt<CloudinaryService>();
+
+    for (final image in imagesToAdd) {
+      if (image is File) {
+        final imageUrl = await cloudinaryService.uploadImage(image);
+      } else {
+        throw Exception('Unsupported image type');
+      }
+    }
+    
+    final docRef = firestore.collection('recipes').doc(recipe.id);
+    await docRef.update(recipe.toMap());
+    await docRef.update({
+        'imageUrls': FieldValue.arrayUnion(imagesToAdd),
+      });
+    await docRef.update({
+        'imageUrls': FieldValue.arrayRemove(imagesToDelete),
+      });
+
+    final updatedRecipeSnapshot = await docRef.get();
+    return Recipe.fromMap(updatedRecipeSnapshot.data() as Map<String, dynamic>)
+        .copyWith(id: updatedRecipeSnapshot.id);
+  }
+
+  /// Updates an existing recipe in Firestore.
+  Future<void> updateRecipe2(Recipe recipe) async {
     await firestore.collection('recipes').doc(recipe.id).update(recipe.toMap());
   }
 

@@ -3,9 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myapp/injection/service_locator.dart';
 import '../../../../core/services/cloudinary_service.dart';
 import '../../data/model/recipe_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RecipeUpdateService {
-  final _cloudinaryService = getIt<CloudinaryService>();
+  // final _cloudinaryService = getIt<CloudinaryService>();
 
   Future<Recipe> updateRecipe({
     required Recipe oldRecipe,
@@ -14,53 +15,64 @@ class RecipeUpdateService {
     required List<String> ingredients,
     required List<String> steps,
     required List<String> tags,
-    required List<dynamic>
-        newImages, // Mixed: File (new) or String (existing URL)
-    required dynamic newThumbnail, // Mixed: File (new) or String (existing URL)
+    required List<dynamic> newImages,
+    required dynamic newThumbnail,
     required String? youtubeVideoUrl,
     required String category,
     required String country,
     required String portion,
     required String cookingDuration,
+    required List<String> imagesToDelete,
+    required List<String> imagesToAdd,
   }) async {
     final user = getIt<FirebaseAuth>().currentUser;
     if (user == null) {
       throw Exception('User not logged in');
     }
 
-    // Prepare lists for image URLs
-    List<String> imageUrls = [];
-    String? thumbnailUrl;
+    final cloudinaryService = getIt<CloudinaryService>();
+
+    List<String> finalImageUrls = [];
+
+    print("Old images: ${oldRecipe.imageUrls}");
+    print("imagesToAdd: $imagesToAdd");
+    print("imagesToDelete: $imagesToDelete");
 
     try {
-      // Process images: if File, upload; if String, reuse URL
+      // Process new and existing images
       for (final image in newImages) {
         if (image is File) {
-          final imageUrl = await _cloudinaryService.uploadImage(image);
-          imageUrls.add(imageUrl);
+          final imageUrl = await cloudinaryService.uploadImage(image);
+          finalImageUrls.add(imageUrl);
         } else if (image is String) {
-          imageUrls.add(image); // Retain existing URL
+          finalImageUrls.add(image);
         } else {
           throw Exception('Unsupported image type');
         }
       }
 
-      // Process thumbnail: if File, upload; if String, reuse URL
-      if (newThumbnail is File) {
-        thumbnailUrl = await _cloudinaryService.uploadImage(newThumbnail);
-      } else if (newThumbnail is String) {
-        thumbnailUrl = newThumbnail; // Retain existing URL
+      // Deduplicate `finalImageUrls`
+      finalImageUrls = finalImageUrls.toSet().toList();
+
+      print("Final image URLs to save: $finalImageUrls");
+      print("Removed images: $imagesToDelete");
+
+      // Delete removed images from Cloudinary
+      if (imagesToDelete.isNotEmpty) {
+        final publicIds =
+            imagesToDelete.map(cloudinaryService.extractPublicId).toList();
+        await cloudinaryService.deleteImages(publicIds);
       }
     } catch (e) {
-      throw Exception('Image upload failed: ${e.toString()}');
+      throw Exception('Image processing failed: ${e.toString()}');
     }
 
-    // Prepare the updated recipe
+    // Prepare updated recipe
     final updatedRecipe = oldRecipe.copyWith(
       title: title,
       description: description,
-      imageUrls: imageUrls,
-      thumbnailUrl: thumbnailUrl,
+      imageUrls: finalImageUrls,
+      thumbnailUrl: newThumbnail,
       youtubeVideoUrl: youtubeVideoUrl,
       ingredients: ingredients,
       steps: steps,
@@ -71,7 +83,6 @@ class RecipeUpdateService {
       cookingDuration: cookingDuration,
       updatedAt: DateTime.now(),
     );
-    print(thumbnailUrl);
 
     return updatedRecipe;
   }

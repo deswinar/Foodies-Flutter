@@ -1,17 +1,24 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImagePickerHelper {
   final ImagePicker _imagePicker = ImagePicker();
 
-  Future<File?> pickImage(BuildContext context, ImageSource source) async {
-    final pickedFile = await _imagePicker.pickImage(source: source);
-    return pickedFile != null ? File(pickedFile.path) : null;
+  Future<dynamic> pickImage(BuildContext context, ImageSource source) async {
+    // Handle web and non-web cases separately
+    if (kIsWeb) {
+      final pickedFile = await _imagePicker.pickImage(source: source);
+      return pickedFile != null ? pickedFile : null; // On web, return XFile
+    } else {
+      final pickedFile = await _imagePicker.pickImage(source: source);
+      return pickedFile != null ? File(pickedFile.path) : null; // On other platforms, return File
+    }
   }
 
-  Future<File?> showImagePickerOptions(BuildContext context) async {
-    File? selectedFile;
+  Future<dynamic> showImagePickerOptions(BuildContext context) async {
+    dynamic selectedFile;
     await showModalBottomSheet<void>(
       context: context,
       builder: (context) {

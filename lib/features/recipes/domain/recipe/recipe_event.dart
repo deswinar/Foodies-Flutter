@@ -27,13 +27,17 @@ class AddRecipeEvent extends RecipeEvent {
 
 class UpdateRecipeEvent extends RecipeEvent {
   final Recipe recipe;
+  final List<dynamic> imagesToAdd;
+  final List<String> imagesToDelete;
 
   const UpdateRecipeEvent({
     required this.recipe,
+    required this.imagesToAdd,
+    required this.imagesToDelete,
   });
 
   @override
-  List<Object?> get props => [recipe];
+  List<Object?> get props => [recipe, imagesToAdd, imagesToDelete];
 }
 
 class DeleteRecipeEvent extends RecipeEvent {

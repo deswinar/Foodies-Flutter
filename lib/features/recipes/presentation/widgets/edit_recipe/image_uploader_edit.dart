@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../domain/services/image_picker_helper.dart';
+
 class ImageUploaderEdit extends StatelessWidget {
-  final List<String> uploadedImages; // List of image paths (local or URL)
-  final Function(String) onImagePicked; // Callback when a new image is added
+  final List<dynamic> uploadedImages; // List of image paths (local or URL)
+  final Function(dynamic) onImagePicked; // Callback when a new image is added
   final Function(String) onImageRemoved; // Callback to remove an image
   final VoidCallback onClearImages; // Callback to clear all images
 
@@ -17,8 +19,6 @@ class ImageUploaderEdit extends StatelessWidget {
   });
 
   Future<void> _pickImage(BuildContext context) async {
-    final picker = ImagePicker();
-
     // Show dialog to choose between Gallery or Camera
     final ImageSource? source = await showDialog<ImageSource>(
       context: context,
@@ -44,10 +44,10 @@ class ImageUploaderEdit extends StatelessWidget {
 
     // If user selects a source, open the image picker
     if (source != null) {
-      final pickedImage = await picker.pickImage(source: source);
+      final pickedImage = await _showImagePicker(context);
 
       if (pickedImage != null) {
-        onImagePicked(pickedImage.path); // Return the file path
+        onImagePicked(pickedImage); // Return the file path
       }
     }
   }
@@ -70,7 +70,14 @@ class ImageUploaderEdit extends StatelessWidget {
         Row(
           children: [
             ElevatedButton.icon(
-              onPressed: () => _pickImage(context),
+              onPressed: () async {
+                final pickedImage = await _showImagePicker(context);
+                print(pickedImage.toString());
+                if (pickedImage != null) {
+                  onImagePicked(pickedImage);
+                }
+                // _pickImage(context);
+              },
               icon: const Icon(Icons.add),
               label: const Text("Add Image"),
             ),
@@ -99,7 +106,8 @@ class ImageUploaderEdit extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                           image: DecorationImage(
                             image: _isValidUrl(imagePath)
-                                ? NetworkImage(imagePath) // Use NetworkImage for URLs
+                                ? NetworkImage(
+                                    imagePath) // Use NetworkImage for URLs
                                 : FileImage(File(imagePath))
                                     as ImageProvider, // Use FileImage for local paths
                             fit: BoxFit.cover,
@@ -132,5 +140,12 @@ class ImageUploaderEdit extends StatelessWidget {
               ),
       ],
     );
+  }
+
+  Future<dynamic> _showImagePicker(BuildContext context) async {
+    final selectedImage =
+        await ImagePickerHelper().showImagePickerOptions(context);
+    print(selectedImage.toString());
+    return selectedImage;
   }
 }

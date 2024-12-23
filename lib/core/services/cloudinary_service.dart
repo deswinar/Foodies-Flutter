@@ -58,4 +58,38 @@ class CloudinaryService {
       }
     }
   }
+
+  Future<void> deleteImages(List<String> publicIds) async {
+    final url =
+        Uri.parse('https://api.cloudinary.com/v1_1/$cloudName/resources/image/upload');
+
+    final headers = {
+      'Authorization':
+          'Basic ${base64Encode(utf8.encode('$apiKey:$apiSecret'))}',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+
+    final body = publicIds.map((id) => 'public_ids[]=$id').join('&');
+
+    final response = await http.delete(
+      url,
+      headers: headers,
+      body: body,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to delete images: ${response.statusCode} ${response.reasonPhrase}');
+    }
+  }
+
+  String extractPublicId(String imageUrl) {
+    final regex = RegExp(r'/([^/]+)\.[a-zA-Z]{3,4}'); // Matches "filename.ext"
+    final match = regex.firstMatch(imageUrl);
+    if (match != null && match.groupCount > 0) {
+      return match.group(1)!; // Extracts the public ID
+    } else {
+      throw Exception('Invalid Cloudinary URL');
+    }
+  }
 }

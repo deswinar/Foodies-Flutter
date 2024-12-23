@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../data/model/recipe_model.dart';
@@ -39,9 +41,9 @@ class RecipeBloc extends Bloc<RecipeEvent, RecipeState> {
       try {
         // if (currentState is RecipeLoadedState) {
         // Update the recipe in Firestore via the repository
-        await recipeRepository.updateRecipe(event.recipe);
+        await recipeRepository.updateRecipe(event.recipe, event.imagesToAdd, event.imagesToDelete);
 
-        final updatedRecipe = event.recipe;
+        final updatedRecipe = event.recipe.copyWith();
 
         // Emit the new state with updated recipes
         emit(RecipeUpdatedState(recipe: updatedRecipe));
