@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myapp/features/user_profiles/data/model/user_model.dart';
-import 'package:myapp/features/user_profiles/domain/following/following_bloc.dart';
 
 import '../bloc/follow/follow_status_cubit.dart';
 

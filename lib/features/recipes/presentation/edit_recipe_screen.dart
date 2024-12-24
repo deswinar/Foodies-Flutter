@@ -1,9 +1,9 @@
 // Suggested code may be subject to a license. Learn more: ~LicenseLog:1685030342.
-import 'dart:io';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:myapp/core/common/widgets/recipe_image_upload_widget.dart';
 import 'package:myapp/features/recipes/data/model/recipe_model.dart';
 import 'package:myapp/features/recipes/domain/recipe/recipe_bloc.dart';
 import 'package:myapp/features/recipes/presentation/widgets/edit_recipe/thumbnail_picker_edit.dart';
@@ -13,9 +13,6 @@ import 'package:dropdown_search/dropdown_search.dart';
 
 // Import constants
 import 'package:myapp/core/constants.dart';
-
-import '../domain/services/recipe_update_service.dart';
-import 'widgets/edit_recipe/image_uploader_edit.dart';
 
 @RoutePage()
 class EditRecipeScreen extends StatefulWidget {
@@ -48,6 +45,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
   List<String> currentImages = [];
   List<dynamic> imagesToAdd = [];
   List<String> imagesToDelete = [];
+  List<XFile> _newImage = [];
 
   @override
   void initState() {
@@ -89,6 +87,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
         );
         Navigator.of(context).pop(state.recipe); // Pass updated recipe
       } else if (state is RecipeErrorState) {
+        print("RecipeError");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(state.errorMessage)),
         );
@@ -137,33 +136,42 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                   },
                 ),
                 const SizedBox(height: 10),
-                ImageUploaderEdit(
-                  uploadedImages: _uploadedImages,
-                  onImagePicked: (file) {
-                    print("before");
+                ImageUploadWidget(
+                  existingImageUrls: widget.recipe.imageUrls,
+                  onImagesUpdated: (images) {
+                    // Handle the updated image list
+                    print(
+                        "Selected Images: ${images.map((e) => e.path).toList()}");
                     setState(() {
-                      imagesToAdd.add(file);
-                      _uploadedImages.add(file);
-                      _thumbnailImage ?? _uploadedImages.first;
-                    });
-                    print("after");
-                  },
-                  onImageRemoved: (path) {
-                    print(_uploadedImages);
-                    setState(() {
-                      imagesToDelete.add(path);
-                      _uploadedImages.remove(path); // Remove specific image
-                    });
-                    print(_uploadedImages);
-                  },
-                  onClearImages: () {
-                    setState(() {
-                      imagesToAdd.clear();
-                      _uploadedImages.clear();
-                      _thumbnailImage = null;
+                      _newImage = images;
                     });
                   },
                 ),
+                // ImageUploaderEdit(
+                //   uploadedImages: _uploadedImages,
+                //   onImagePicked: (file) {
+                //     setState(() {
+                //       imagesToAdd.add(file);
+                //       _uploadedImages.add(file);
+                //       _thumbnailImage ??= _uploadedImages.first;
+                //     });
+                //   },
+                //   onImageRemoved: (path) {
+                //     print(_uploadedImages);
+                //     setState(() {
+                //       imagesToDelete.add(path);
+                //       _uploadedImages.remove(path); // Remove specific image
+                //     });
+                //     print(_uploadedImages);
+                //   },
+                //   onClearImages: () {
+                //     setState(() {
+                //       imagesToAdd.clear();
+                //       _uploadedImages.clear();
+                //       _thumbnailImage = null;
+                //     });
+                //   },
+                // ),
                 const SizedBox(height: 20),
                 _buildSectionTitle('Details'),
                 TextFormField(
@@ -263,9 +271,10 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                         );
 
                         context.read<RecipeBloc>().add(UpdateRecipeEvent(
-                            recipe: updatedRecipe,
-                            imagesToAdd: imagesToAdd,
-                            imagesToDelete: imagesToDelete));
+                              oldRecipe: widget.recipe,
+                              newRecipe: updatedRecipe,
+                              imagesToAdd: _newImage,
+                            ));
 
                         // Navigator.of(context)
                         //     .pop(updatedRecipe); // Pass updated recipe

@@ -1,13 +1,15 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../domain/services/image_picker_helper.dart';
 
 class ImageUploaderEdit extends StatelessWidget {
-  final List<dynamic> uploadedImages; // List of image paths (local or URL)
+  final List<dynamic>
+      uploadedImages; // List can hold any type (XFile, File, etc.)
   final Function(dynamic) onImagePicked; // Callback when a new image is added
-  final Function(String) onImageRemoved; // Callback to remove an image
+  final Function(dynamic) onImageRemoved; // Callback to remove an image
   final VoidCallback onClearImages; // Callback to clear all images
 
   const ImageUploaderEdit({
@@ -47,7 +49,7 @@ class ImageUploaderEdit extends StatelessWidget {
       final pickedImage = await _showImagePicker(context);
 
       if (pickedImage != null) {
-        onImagePicked(pickedImage); // Return the file path
+        onImagePicked(pickedImage); // Return the picked image (XFile or File)
       }
     }
   }
@@ -72,11 +74,9 @@ class ImageUploaderEdit extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () async {
                 final pickedImage = await _showImagePicker(context);
-                print(pickedImage.toString());
                 if (pickedImage != null) {
                   onImagePicked(pickedImage);
                 }
-                // _pickImage(context);
               },
               icon: const Icon(Icons.add),
               label: const Text("Add Image"),
@@ -97,6 +97,8 @@ class ImageUploaderEdit extends StatelessWidget {
                 spacing: 10,
                 runSpacing: 10,
                 children: uploadedImages.map((imagePath) {
+                  bool isUrl =
+                      Uri.tryParse(imagePath)?.hasAbsolutePath ?? false;
                   return Stack(
                     children: [
                       Container(
@@ -104,22 +106,26 @@ class ImageUploaderEdit extends StatelessWidget {
                         height: 100,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          image: DecorationImage(
-                            image: _isValidUrl(imagePath)
-                                ? NetworkImage(
-                                    imagePath) // Use NetworkImage for URLs
-                                : FileImage(File(imagePath))
-                                    as ImageProvider, // Use FileImage for local paths
-                            fit: BoxFit.cover,
-                          ),
                         ),
+                        child: isUrl
+                            ? Image.network(
+                                imagePath,
+                                fit: BoxFit.cover,
+                                width: 100,
+                                height: 100,
+                              )
+                            : Image.file(
+                                File(imagePath),
+                                fit: BoxFit.cover,
+                                width: 100,
+                                height: 100,
+                              ),
                       ),
                       Positioned(
                         top: 0,
                         right: 0,
                         child: GestureDetector(
-                          onTap: () => onImageRemoved(
-                              imagePath), // Call onImageRemoved instead of onImagePicked
+                          onTap: () => onImageRemoved(imagePath),
                           child: const CircleAvatar(
                             radius: 12,
                             backgroundColor: Colors.red,
@@ -145,7 +151,6 @@ class ImageUploaderEdit extends StatelessWidget {
   Future<dynamic> _showImagePicker(BuildContext context) async {
     final selectedImage =
         await ImagePickerHelper().showImagePickerOptions(context);
-    print(selectedImage.toString());
-    return selectedImage;
+    return selectedImage; // Return the selected image (either XFile or File)
   }
 }

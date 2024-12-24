@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'like_button.dart';
@@ -22,8 +21,6 @@ class RecipeCompactWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = getIt<FirebaseAuth>().currentUser;
-    final currentUserId = user?.uid ?? '';
 
     return Card(
       elevation: 3.0,

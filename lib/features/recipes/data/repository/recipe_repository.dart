@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:myapp/features/recipes/data/model/recipe_model.dart';
 
 import '../../../../core/services/cloudinary_service.dart';
@@ -45,25 +46,40 @@ class RecipeRepository {
   }
 
   /// Updates an existing recipe in Firestore.
-  Future<Recipe> updateRecipe(Recipe recipe, List<dynamic> imagesToAdd, List<String> imagesToDelete) async {
+  Future<Recipe> updateRecipe(
+      Recipe oldRecipe, Recipe newRecipe, List<XFile> imagesToAdd) async {
     final cloudinaryService = getIt<CloudinaryService>();
+    List<String> _uploadedImageUrls = [];
 
     for (final image in imagesToAdd) {
-      if (image is File) {
-        final imageUrl = await cloudinaryService.uploadImage(image);
+      print(image.toString());
+      if (image is XFile) {
+        final imageUrl = await cloudinaryService.uploadImage(File(image.path));
+        _uploadedImageUrls.add(imageUrl);
       } else {
         throw Exception('Unsupported image type');
       }
     }
-    
-    final docRef = firestore.collection('recipes').doc(recipe.id);
-    await docRef.update(recipe.toMap());
-    await docRef.update({
-        'imageUrls': FieldValue.arrayUnion(imagesToAdd),
-      });
-    await docRef.update({
-        'imageUrls': FieldValue.arrayRemove(imagesToDelete),
-      });
+
+    final List<String> newImageUrls = [
+      ...oldRecipe.imageUrls,
+      ..._uploadedImageUrls
+    ];
+    newRecipe.copyWith(imageUrls: newImageUrls);
+
+    Map<String, dynamic> newRecipeMap = newRecipe.toMap();
+
+    // Remove the sensitive attribute
+    newRecipeMap.remove('newImageFiles');
+
+    final docRef = firestore.collection('recipes').doc(oldRecipe.id);
+    await docRef.update(newRecipeMap);
+    // await docRef.update({
+    //     'imageUrls': FieldValue.arrayUnion(imagesToAdd),
+    //   });
+    // await docRef.update({
+    //     'imageUrls': FieldValue.arrayRemove(imagesToDelete),
+    //   });
 
     final updatedRecipeSnapshot = await docRef.get();
     return Recipe.fromMap(updatedRecipeSnapshot.data() as Map<String, dynamic>)

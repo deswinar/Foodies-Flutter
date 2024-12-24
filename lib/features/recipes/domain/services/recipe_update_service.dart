@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myapp/injection/service_locator.dart';
 import '../../../../core/services/cloudinary_service.dart';
 import '../../data/model/recipe_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RecipeUpdateService {
   // final _cloudinaryService = getIt<CloudinaryService>();

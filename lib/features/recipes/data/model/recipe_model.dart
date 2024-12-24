@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../user_profiles/data/model/user_model.dart'; // Import your UserModel
 
 class Recipe {
@@ -53,6 +56,7 @@ class Recipe {
     String? title,
     String? description,
     List<String>? imageUrls,
+    List<XFile>? newImageFiles,
     String? thumbnailUrl,
     String? youtubeVideoUrl,
     List<String>? ingredients,

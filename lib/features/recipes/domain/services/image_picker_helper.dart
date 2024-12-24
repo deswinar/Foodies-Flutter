@@ -8,13 +8,10 @@ class ImagePickerHelper {
 
   Future<dynamic> pickImage(BuildContext context, ImageSource source) async {
     // Handle web and non-web cases separately
-    if (kIsWeb) {
+    
       final pickedFile = await _imagePicker.pickImage(source: source);
       return pickedFile != null ? pickedFile : null; // On web, return XFile
-    } else {
-      final pickedFile = await _imagePicker.pickImage(source: source);
-      return pickedFile != null ? File(pickedFile.path) : null; // On other platforms, return File
-    }
+    
   }
 
   Future<dynamic> showImagePickerOptions(BuildContext context) async {

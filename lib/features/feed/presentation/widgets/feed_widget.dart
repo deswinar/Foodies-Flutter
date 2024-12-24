@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/common/widgets/recipe_compact_widget.dart';
-import '../../../../core/common/widgets/recipe_widget.dart';
 import '../../../../injection/service_locator.dart';
 import '../../../../router/app_router.dart';
 import '../../../recipes/data/model/recipe_model.dart';

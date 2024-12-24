@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../../features/user_profiles/data/model/user_model.dart';
 import '../../../../features/user_profiles/data/repository/follow_repository.dart';
 
 part 'follow_status_state.dart';
