@@ -30,7 +30,7 @@ class RecipeBloc extends Bloc<RecipeEvent, RecipeState> {
     on<AddRecipeEvent>((event, emit) async {
       emit(RecipeAddingState());
       try {
-        final recipe = await recipeRepository.addRecipe(event.recipe);
+        final recipe = await recipeRepository.addRecipe(event.recipe, event.imagesToAdd);
         emit(RecipeAddedState(recipe));
       } catch (e) {
         emit(RecipeErrorState(errorMessage: e.toString()));

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/features/recipes/data/model/recipe_model.dart';
+import '../../data/model/recipe_model.dart';
 import '../../data/repository/comment_repository.dart';
 
 part 'comment_event.dart';

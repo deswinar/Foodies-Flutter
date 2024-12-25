@@ -1,24 +1,17 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/features/auth/data/auth_repository.dart';
-import 'package:myapp/features/auth/domain/auth_bloc.dart';
-import 'package:myapp/features/auth/domain/auth_event.dart';
-import 'package:myapp/core/common/widgets/recipe_widget.dart';
-import 'package:myapp/features/recipes/data/model/recipe_model.dart';
-import 'package:myapp/features/user_profiles/data/model/user_model.dart';
-import 'package:myapp/features/user_profiles/domain/following/following_bloc.dart';
-import 'package:myapp/features/user_profiles/domain/profile/profile_bloc.dart';
-import 'package:myapp/features/user_profiles/domain/user_recipes/user_recipes_bloc.dart';
-import 'package:myapp/injection/service_locator.dart';
-import 'package:myapp/router/app_router.dart';
 
 import '../../../core/common/widgets/profile_image_widget.dart';
 import '../../../core/common/widgets/recipe_compact_widget.dart';
-import '../../auth/domain/auth_state.dart';
+import '../../../router/app_router.dart';
+import '../../auth/domain/auth_bloc.dart';
+import '../../recipes/data/model/recipe_model.dart';
+import '../data/model/user_model.dart';
 import '../domain/follower/follower_bloc.dart';
+import '../domain/following/following_bloc.dart';
+import '../domain/profile/profile_bloc.dart';
+import '../domain/user_recipes/user_recipes_bloc.dart';
 
 @RoutePage()
 class ProfileScreen extends StatelessWidget {
@@ -51,14 +44,12 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   // Profile Picture and Name
                   ProfileImageWidget(
-                    source:
+                    initialSource:
                         user.photoURL!, // Cloudinary public ID or network URL
-                    size: 120, // Circular size (diameter)
+                    size: 100, // Circular size (diameter)
                     placeholder:
                         const Center(child: CircularProgressIndicator()),
-                    errorWidget: const Icon(Icons.account_circle, size: 80),
-                    useCloudinary:
-                        true, // Toggle between Cloudinary or network image
+                    errorWidget: const Icon(Icons.account_circle, size: 80), // Toggle between Cloudinary or network image
                   ),
                   const SizedBox(height: 16.0),
                   Text(

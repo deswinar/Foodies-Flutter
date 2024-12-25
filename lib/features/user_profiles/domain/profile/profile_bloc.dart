@@ -1,8 +1,9 @@
 // Suggested code may be subject to a license. Learn more: ~LicenseLog:2150054707.
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:myapp/features/user_profiles/data/model/user_model.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../data/model/user_model.dart';
 import '../../data/repository/profile_repository.dart';
 
 part 'profile_event.dart';
@@ -26,7 +27,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<UpdateProfile>((event, emit) async {
       emit(ProfileUpdating());
       try {
-        await profileRepository.updateProfile(event.updatedProfile);
+        await profileRepository.updateProfile(event.updatedProfile, event.newPhoto);
         // final user = await profileRepository.getProfile();
         add(FetchProfile());
         emit(ProfileUpdated(user: event.updatedProfile));

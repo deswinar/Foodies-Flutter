@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/features/user_profiles/data/model/following_model.dart';
-import 'package:myapp/features/user_profiles/data/model/user_model.dart';
+import '../../data/model/user_model.dart';
 import '../../data/repository/follow_repository.dart';
 
 part 'following_event.dart';

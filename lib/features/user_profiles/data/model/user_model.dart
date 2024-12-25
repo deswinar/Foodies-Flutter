@@ -16,6 +16,25 @@ class UserModel {
     this.createdAt,
   });
 
+  // Suggested code may be subject to a license. Learn more: ~LicenseLog:4224916013.
+// Suggested code may be subject to a license. Learn more: ~LicenseLog:726861950.
+  UserModel copyWith({
+    String? uid,
+    String? email,
+    String? displayName,
+    String? photoURL,
+    DateTime? createdAt,
+  }) {
+    return UserModel(
+      uid: uid ?? this.uid,
+      email: email ?? this.email,
+      displayName: displayName ?? this.displayName,
+      photoURL: photoURL ?? this.photoURL,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+
   /// Convert UserModel to Firestore document (Map<String, dynamic>)
   Map<String, dynamic> toMap() {
     return {

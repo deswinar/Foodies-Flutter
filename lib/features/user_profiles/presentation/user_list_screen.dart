@@ -1,12 +1,9 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/features/user_profiles/data/model/user_model.dart';
-import 'package:myapp/features/user_profiles/domain/follower/follower_bloc.dart';
-import 'package:myapp/features/user_profiles/domain/following/following_bloc.dart';
-import 'package:myapp/features/user_profiles/domain/user_list/user_list_bloc.dart';
-import 'package:myapp/features/user_profiles/presentation/widgets/user_list.dart';
+
+import '../domain/user_list/user_list_bloc.dart';
+import 'widgets/user_list.dart';
 
 @RoutePage()
 class UserListScreen extends StatelessWidget {

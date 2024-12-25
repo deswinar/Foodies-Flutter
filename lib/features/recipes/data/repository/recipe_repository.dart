@@ -2,21 +2,37 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:myapp/features/recipes/data/model/recipe_model.dart';
 
 import '../../../../core/services/cloudinary_service.dart';
 import '../../../../injection/service_locator.dart';
-import '../../domain/services/recipe_update_service.dart';
+import '../model/recipe_model.dart';
 
 class RecipeRepository {
   final FirebaseFirestore firestore;
+  final cloudinaryService = getIt<CloudinaryService>();
 
   RecipeRepository({required this.firestore});
 
   /// Adds a recipe to Firestore and returns its generated document ID.
-  Future<Recipe> addRecipe(Recipe recipe) async {
+  Future<Recipe> addRecipe(Recipe newRecipe, List<XFile> imagesToAdd) async {
+    List<String> newImageUrls = [];
+
+    for (final image in imagesToAdd) {
+      print(image.toString());
+      if (image is XFile) {
+        final imageUrl = await cloudinaryService.uploadImage(File(image.path));
+        newImageUrls.add(imageUrl);
+      } else {
+        throw Exception('Unsupported image type');
+      }
+    }
+
+    newRecipe = newRecipe.copyWith(
+        imageUrls: newImageUrls, thumbnailUrl: newImageUrls.first);
+
+    Map<String, dynamic> recipe = newRecipe.toMap();
     // Add recipe to Firestore and get the document reference
-    final docRef = await firestore.collection('recipes').add(recipe.toMap());
+    final docRef = await firestore.collection('recipes').add(recipe);
 
     // Fetch the added recipe using the document ID
     final addedRecipeSnapshot = await docRef.get();
@@ -48,38 +64,35 @@ class RecipeRepository {
   /// Updates an existing recipe in Firestore.
   Future<Recipe> updateRecipe(
       Recipe oldRecipe, Recipe newRecipe, List<XFile> imagesToAdd) async {
-    final cloudinaryService = getIt<CloudinaryService>();
-    List<String> _uploadedImageUrls = [];
+    List<String> newImageUrls = [];
 
     for (final image in imagesToAdd) {
       print(image.toString());
       if (image is XFile) {
         final imageUrl = await cloudinaryService.uploadImage(File(image.path));
-        _uploadedImageUrls.add(imageUrl);
+        newImageUrls.add(imageUrl);
       } else {
         throw Exception('Unsupported image type');
       }
     }
 
-    final List<String> newImageUrls = [
-      ...oldRecipe.imageUrls,
-      ..._uploadedImageUrls
-    ];
-    newRecipe.copyWith(imageUrls: newImageUrls);
+    final removedImageUrls = oldRecipe.imageUrls
+        .where((url) => !newImageUrls.contains(url))
+        .toList();
+
+    newRecipe = newRecipe.copyWith(
+        imageUrls: newImageUrls, thumbnailUrl: newImageUrls.first);
 
     Map<String, dynamic> newRecipeMap = newRecipe.toMap();
 
-    // Remove the sensitive attribute
-    newRecipeMap.remove('newImageFiles');
-
     final docRef = firestore.collection('recipes').doc(oldRecipe.id);
     await docRef.update(newRecipeMap);
-    // await docRef.update({
-    //     'imageUrls': FieldValue.arrayUnion(imagesToAdd),
-    //   });
-    // await docRef.update({
-    //     'imageUrls': FieldValue.arrayRemove(imagesToDelete),
-    //   });
+    await docRef.update({
+      'imageUrls': FieldValue.arrayUnion(newImageUrls),
+    });
+    await docRef.update({
+      'imageUrls': FieldValue.arrayRemove(removedImageUrls),
+    });
 
     final updatedRecipeSnapshot = await docRef.get();
     return Recipe.fromMap(updatedRecipeSnapshot.data() as Map<String, dynamic>)

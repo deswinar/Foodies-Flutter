@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/features/user_profiles/data/model/user_model.dart';
 
+import '../../../features/user_profiles/data/model/user_model.dart';
 import '../bloc/follow/follow_status_cubit.dart';
 
 class FollowButtonWidget extends StatelessWidget {

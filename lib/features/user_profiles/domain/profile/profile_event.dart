@@ -6,6 +6,7 @@ class FetchProfile extends ProfileEvent {}
 
 class UpdateProfile extends ProfileEvent {
   final UserModel updatedProfile;
+  final XFile newPhoto;
 
-  UpdateProfile({required this.updatedProfile});
+  UpdateProfile({required this.updatedProfile, required this.newPhoto});
 }

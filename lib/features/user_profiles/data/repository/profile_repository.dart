@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../../core/services/cloudinary_service.dart';
 import '../../../../injection/service_locator.dart';
 import '../model/user_model.dart';
 
@@ -34,11 +38,18 @@ class ProfileRepository {
   }
 
   /// Update the profile of the current logged-in user
-  Future<void> updateProfile(UserModel updatedProfile) async {
+  Future<void> updateProfile(UserModel updatedProfile, XFile newPhoto) async {
+    final cloudinaryService = getIt<CloudinaryService>();
     try {
       // Ensure the user is logged in
       if (user == null) {
         throw Exception('User is not logged in.');
+      }
+
+      if (newPhoto.path.isNotEmpty) {
+        final imageUrl =
+            await cloudinaryService.uploadImage(File(newPhoto.path));
+        updatedProfile = updatedProfile.copyWith(photoURL: imageUrl);
       }
 
       // Update the user's profile in Firestore

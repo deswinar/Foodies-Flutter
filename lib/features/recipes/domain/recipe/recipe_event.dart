@@ -18,11 +18,12 @@ class FetchRecipeByIdEvent extends RecipeEvent {
 
 class AddRecipeEvent extends RecipeEvent {
   final Recipe recipe;
+  final List<XFile> imagesToAdd;
 
-  const AddRecipeEvent({required this.recipe});
+  const AddRecipeEvent({required this.recipe, required this.imagesToAdd});
 
   @override
-  List<Object?> get props => [recipe];
+  List<Object?> get props => [recipe, imagesToAdd];
 }
 
 class UpdateRecipeEvent extends RecipeEvent {

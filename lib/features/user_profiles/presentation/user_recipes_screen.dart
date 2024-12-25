@@ -1,12 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/features/user_profiles/data/model/user_model.dart';
-import 'package:myapp/features/user_profiles/domain/user_recipes/user_recipes_bloc.dart';
-import 'package:myapp/router/app_router.dart';
 
 import '../../../core/common/widgets/recipe_compact_widget.dart';
-import '../../../core/common/widgets/recipe_widget.dart';
+import '../../../router/app_router.dart';
+import '../data/model/user_model.dart';
+import '../domain/user_recipes/user_recipes_bloc.dart';
 
 @RoutePage()
 class UserRecipesScreen extends StatelessWidget {

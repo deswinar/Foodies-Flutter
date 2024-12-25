@@ -1,11 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/core/common/widgets/follow_button_widget.dart';
-import 'package:myapp/features/user_profiles/data/model/user_model.dart';
-import 'package:myapp/injection/service_locator.dart';
 import '../../../../../core/common/bloc/follow/follow_status_cubit.dart';
-import '../../../../user_profiles/domain/following/following_bloc.dart';
+import '../../../../../core/common/widgets/follow_button_widget.dart';
+import '../../../../../injection/service_locator.dart';
+import '../../../../user_profiles/data/model/user_model.dart';
 
 class FollowRecipeCreatorSection extends StatelessWidget {
   final UserModel userModel;

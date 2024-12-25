@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../router/app_router.dart';
 import '../../auth/domain/auth_bloc.dart';
-import '../../auth/domain/auth_event.dart';
-import '../../auth/domain/auth_state.dart';
 
 @RoutePage()
 class SplashScreen extends StatefulWidget {

@@ -1,15 +1,11 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/features/auth/domain/auth_bloc.dart';
-import 'package:myapp/features/auth/domain/auth_state.dart';
-import 'package:myapp/features/favorites/presentation/favorite_screen.dart';
-import 'package:myapp/features/user_profiles/data/model/user_model.dart';
-import 'package:myapp/features/user_profiles/presentation/profile_screen.dart';
-import 'package:myapp/router/app_router.dart';
+import '../../features/auth/domain/auth_bloc.dart';
+import '../../features/favorites/presentation/favorite_screen.dart';
 import '../../features/feed/presentation/feed_screen.dart';
-import '../../injection/service_locator.dart';
+import '../../features/user_profiles/presentation/profile_screen.dart';
+import '../../router/app_router.dart';
 import 'bottom_nav_bar.dart';
 
 @RoutePage()

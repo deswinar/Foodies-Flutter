@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+part of 'auth_bloc.dart';
 
 abstract class AuthState {}
 

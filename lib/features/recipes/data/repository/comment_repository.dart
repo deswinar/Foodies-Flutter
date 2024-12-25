@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:myapp/injection/service_locator.dart';
+import '../../../../injection/service_locator.dart';
 import '../model/recipe_model.dart';
 
 class CommentRepository {

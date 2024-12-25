@@ -3,22 +3,22 @@ import 'package:cloudinary_url_gen/cloudinary.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/core/common/bloc/follow/follow_status_cubit.dart';
-import 'package:myapp/features/favorites/domain/favorite_bloc.dart';
-import 'package:myapp/features/feed/domain/feeds/featured_feed_bloc.dart';
-import 'package:myapp/features/feed/domain/feeds/feed_bloc.dart';
-import 'package:myapp/features/feed/domain/feeds/feed_event.dart';
-import 'package:myapp/core/common/bloc/like/like_bloc.dart';
-import 'package:myapp/features/feed/domain/search/search_bloc.dart';
-import 'package:myapp/features/recipes/domain/list_recipe/list_recipe_bloc.dart';
-import 'package:myapp/features/recipes/domain/recipe/recipe_bloc.dart';
-import 'package:myapp/features/user_profiles/domain/following/following_bloc.dart';
-import 'package:myapp/features/user_profiles/domain/profile/profile_bloc.dart';
-import 'package:myapp/features/user_profiles/domain/user_list/user_list_bloc.dart';
-import 'package:myapp/features/user_profiles/domain/user_recipes/user_recipes_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../core/common/bloc/follow/follow_status_cubit.dart';
+import '../features/favorites/domain/favorite_bloc.dart';
+import '../features/feed/domain/feeds/featured_feed_bloc.dart';
+import '../features/feed/domain/feeds/feed_bloc.dart';
+import '../features/feed/domain/feeds/feed_event.dart';
+import '../core/common/bloc/like/like_bloc.dart';
+import '../features/feed/domain/search/search_bloc.dart';
+import '../features/recipes/domain/list_recipe/list_recipe_bloc.dart';
+import '../features/recipes/domain/recipe/recipe_bloc.dart';
+import '../features/user_profiles/domain/following/following_bloc.dart';
+import '../features/user_profiles/domain/profile/profile_bloc.dart';
+import '../features/user_profiles/domain/user_list/user_list_bloc.dart';
+import '../features/user_profiles/domain/user_recipes/user_recipes_bloc.dart';
 
 import 'features/auth/domain/auth_bloc.dart';
-import 'features/auth/domain/auth_event.dart';
 import 'features/recipes/domain/comment/comment_bloc.dart';
 import 'features/user_profiles/domain/follower/follower_bloc.dart';
 import 'injection/service_locator.dart';
@@ -27,14 +27,20 @@ import 'firebase_options.dart';
 
 Future<void> _initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
+
+  if (dotenv.isInitialized) {
+    print("Env file loaded successfully");
+  } else {
+    print("Env file failed to load");
+  }
 
   // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  CloudinaryContext.cloudinary =
-      Cloudinary.fromCloudName(cloudName: 'demo');
+  CloudinaryContext.cloudinary = Cloudinary.fromCloudName(cloudName: 'demo');
 
   // Setup dependency injection
   setupDependencies();

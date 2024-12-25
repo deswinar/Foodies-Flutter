@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:myapp/injection/service_locator.dart';
+import '../injection/service_locator.dart';
 
 import 'core/constants.dart';
 import 'features/recipes/data/model/recipe_model.dart';

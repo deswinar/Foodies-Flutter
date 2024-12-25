@@ -1,16 +1,18 @@
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/features/recipes/domain/recipe/recipe_bloc.dart';
-import 'package:myapp/features/recipes/presentation/widgets/input_dialog.dart';
-import 'package:myapp/features/recipes/presentation/widgets/interactive_list.dart';
-import 'package:myapp/features/recipes/presentation/widgets/add_recipe/thumbnail_picker.dart';
-import 'package:myapp/features/recipes/domain/services/recipe_submission_service.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'widgets/add_recipe/image_uploader.dart';
 // Import constants
-import 'package:myapp/core/constants.dart';
+import '../../../core/common/widgets/recipe_image_upload_widget.dart';
+import '../../../core/constants.dart';
+import '../../../injection/service_locator.dart';
+import '../data/model/recipe_model.dart';
+import '../domain/recipe/recipe_bloc.dart';
+import 'widgets/input_dialog.dart';
+import 'widgets/interactive_list.dart';
 
 @RoutePage()
 class AddRecipeScreen extends StatefulWidget {
@@ -32,7 +34,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   final List<String> _steps = [];
   final List<String> _tags = [];
   File? _thumbnailImage;
-  final List<File> _uploadedImages = [];
+  List<XFile> _uploadedImages = [];
 
   String? _selectedCategory;
   String? _selectedCountry;
@@ -47,20 +49,32 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
       }
 
       try {
-        await RecipeSubmissionService().submitRecipe(
+        final user = getIt<FirebaseAuth>().currentUser;
+
+        final recipe = Recipe(
+          id: '', // Firestore will generate this
+          userId: user!.uid,
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim(),
+          imageUrls: [],
+          thumbnailUrl: '',
+          youtubeVideoUrl: _youtubeUrlController.text.trim(),
           ingredients: _ingredients,
           steps: _steps,
           tags: _tags,
-          uploadedImages: _uploadedImages,
-          thumbnailImage: _thumbnailImage,
-          youtubeVideoUrl: _youtubeUrlController.text.trim(),
-          category: _selectedCategory!,
-          country: _selectedCountry!,
-          portion: _portionController.text.trim(),
-          cookingDuration: _cookingDuration ?? '', // Provide default if null
+          category: _selectedCategory!, // New field
+          country: _selectedCountry!, // New field
+          portion: _portionController.text.trim(), // New field
+          cookingDuration: _cookingDuration ?? '', // New field
+          likesCount: 0,
+          commentsCount: 0,
+          shareCount: 0,
+          createdAt: DateTime.now(),
         );
+
+        context
+            .read<RecipeBloc>()
+            .add(AddRecipeEvent(recipe: recipe, imagesToAdd: _uploadedImages));
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Recipe added successfully!')),
         );
@@ -106,31 +120,13 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
               child: ListView(
                 children: [
                   // Thumbnail and Image Uploader
-                  ThumbnailPicker(
-                    thumbnail: _thumbnailImage,
-                    onThumbnailSelected: (file) {
+                  ImageUploadWidget(
+                    onImagesUpdated: (images) {
+                      // Handle the updated image list
+                      print(
+                          "Selected Images: ${images.map((e) => e.path).toList()}");
                       setState(() {
-                        _thumbnailImage = file; // Allows manual thumbnail selection
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  ImageUploader(
-                    uploadedImages: _uploadedImages,
-                    onImagePicked: (file) {
-                      setState(() {
-                        _uploadedImages.add(file);
-
-                        // Automatically set the first image as the thumbnail if not already set
-                        if (_thumbnailImage == null && _uploadedImages.isNotEmpty) {
-                          _thumbnailImage = _uploadedImages.first;
-                        }
-                      });
-                    },
-                    onClearImages: () {
-                      setState(() {
-                        _uploadedImages.clear();
-                        _thumbnailImage = null; // Reset the thumbnail when images are cleared
+                        _uploadedImages = images;
                       });
                     },
                   ),

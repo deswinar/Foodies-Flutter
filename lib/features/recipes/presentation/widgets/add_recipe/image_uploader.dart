@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:myapp/features/recipes/domain/services/image_picker_helper.dart';
+
+import '../../../domain/services/image_picker_helper.dart';
 
 class ImageUploader extends StatelessWidget {
   final List<File> uploadedImages;

@@ -1,77 +1,76 @@
+// Suggested code may be subject to a license. Learn more: ~LicenseLog:808180350.
+// Suggested code may be subject to a license. Learn more: ~LicenseLog:998860799.
+// Suggested code may be subject to a license. Learn more: ~LicenseLog:2735373682.
 import 'dart:io';
-import 'package:cloudinary_flutter/image/cld_image.dart';
-import 'package:cloudinary_url_gen/transformation/resize/resize.dart';
-import 'package:cloudinary_url_gen/transformation/transformation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class ProfileImageWidget extends StatelessWidget {
-  final String
-      source; // The source of the image, e.g., publicId or URL or local file path
+class ProfileImageWidget extends StatefulWidget {
+  final String? initialSource; // The initial source of the image
   final double size; // Diameter of the circular image
   final Widget? placeholder;
   final Widget? errorWidget;
-  final bool
-      useCloudinary; // Flag to toggle between Cloudinary or another source
 
   const ProfileImageWidget({
     super.key,
-    required this.source,
+    this.initialSource,
     this.size = 100,
     this.placeholder,
     this.errorWidget,
-    this.useCloudinary = true,
   });
 
   @override
+  State<ProfileImageWidget> createState() => _ProfileImageWidgetState();
+}
+
+class _ProfileImageWidgetState extends State<ProfileImageWidget> {
+  XFile? _imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialSource != null) {
+      _imageFile = XFile(widget.initialSource!);
+    }
+    // You might want to load the initial image here if it's from a network source
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (useCloudinary) {
-      // Render a Cloudinary image in a circular widget
+    final source = _imageFile ?? widget.initialSource;
+
+    if (source == null) {
       return ClipOval(
         child: SizedBox(
-          width: size,
-          height: size,
-          child: CldImageWidget(
-            publicId: source,
-            transformation: Transformation()
-              ..resize(Resize.fill()
-                ..width(size.toInt())
-                ..height(size.toInt())),
-            placeholder: (context, _) {
-              return placeholder ??
-                  const Center(child: CircularProgressIndicator());
-            },
-            errorBuilder: (context, error, stackTrace) =>
-                errorWidget ?? const Icon(Icons.account_circle, size: 50),
-          ),
-        ),
-      );
-    } else {
-      // Check if source is a URL or local file path
-      bool isUrl = Uri.tryParse(source)?.hasAbsolutePath ?? false;
-      return ClipOval(
-        child: SizedBox(
-          width: size,
-          height: size,
-          child: isUrl
-              ? Image.network(
-                  source,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return placeholder ??
-                        const Center(child: CircularProgressIndicator());
-                  },
-                  errorBuilder: (context, error, stackTrace) =>
-                      errorWidget ?? const Icon(Icons.account_circle, size: 50),
-                )
-              : Image.file(
-                  File(source),
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      errorWidget ?? const Icon(Icons.account_circle, size: 50),
-                ),
+          width: widget.size,
+          height: widget.size,
+          child:
+              widget.placeholder ?? const Icon(Icons.account_circle, size: 50),
         ),
       );
     }
+
+    return ClipOval(
+      child: SizedBox(
+        width: widget.size,
+        height: widget.size,
+        child: kIsWeb || Uri.tryParse(_imageFile!.path)?.isAbsolute == true
+            ? Image.network(
+                _imageFile!.path,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    widget.errorWidget ??
+                    const Icon(Icons.account_circle, size: 50),
+              )
+            : Image.file(
+                File(_imageFile!.path),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    widget.errorWidget ??
+                    const Icon(Icons.account_circle, size: 50),
+              ),
+      ),
+    );
   }
 }

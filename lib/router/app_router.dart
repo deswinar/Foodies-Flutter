@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:myapp/features/recipes/presentation/edit_recipe_screen.dart';
-import 'package:myapp/features/recipes/presentation/recipe_details_screen.dart';
-import 'package:myapp/features/user_profiles/presentation/edit_profile_screen.dart';
-import 'package:myapp/features/user_profiles/presentation/profile_screen.dart';
-import 'package:myapp/features/user_profiles/presentation/user_list_screen.dart';
-import 'package:myapp/features/user_profiles/presentation/user_recipes_screen.dart';
+import '../features/recipes/presentation/edit_recipe_screen.dart';
+import '../features/recipes/presentation/recipe_details_screen.dart';
+import '../features/user_profiles/presentation/edit_profile_screen.dart';
+import '../features/user_profiles/presentation/profile_screen.dart';
+import '../features/user_profiles/presentation/user_list_screen.dart';
+import '../features/user_profiles/presentation/user_recipes_screen.dart';
 import '../features/recipes/presentation/add_recipe_screen.dart';
 import '../core/navigation/main_screen.dart';
 import '../features/feed/presentation/feed_screen.dart';

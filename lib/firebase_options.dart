@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -49,21 +50,21 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDRmziKV3jEv_n-C0GtTlfEX-aBezHFpWc',
-    appId: '1:533416174933:web:4dc02c4d8523c041fdfbdc',
-    messagingSenderId: '533416174933',
-    projectId: 'foodies-30144',
-    authDomain: 'foodies-30144.firebaseapp.com',
-    storageBucket: 'foodies-30144.firebasestorage.app',
-    measurementId: 'G-J20NKLHLEH',
+  static FirebaseOptions web = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY']!,
+    appId: dotenv.env['FIREBASE_APP_ID']!,
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+    authDomain: dotenv.env['FIREBASE_AUTH_DOMAIN']!,
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
+    measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID']!,
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA8XjLe-BVeQD4_DQgO-UtgSqXp19bh-98',
-    appId: '1:533416174933:android:03d7aeceec9a8ef1fdfbdc',
-    messagingSenderId: '533416174933',
-    projectId: 'foodies-30144',
-    storageBucket: 'foodies-30144.firebasestorage.app',
+  static FirebaseOptions android = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY']!,
+    appId: dotenv.env['FIREBASE_APP_ID']!,
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
   );
 }

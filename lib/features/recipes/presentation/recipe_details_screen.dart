@@ -2,14 +2,14 @@ import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/features/recipes/domain/recipe/recipe_bloc.dart';
-import 'package:myapp/features/recipes/presentation/widgets/sections/follow_recipe_creator_section.dart';
-import 'package:myapp/features/user_profiles/data/model/user_model.dart';
 import '../../../injection/service_locator.dart';
+import '../../user_profiles/data/model/user_model.dart';
 import '../data/model/recipe_model.dart';
 import '../../../core/common/bloc/like/like_bloc.dart';
+import '../domain/recipe/recipe_bloc.dart';
 import 'widgets/sections/comment_section.dart';
 import '../../../core/common/widgets/like_button.dart';
+import 'widgets/sections/follow_recipe_creator_section.dart';
 import 'widgets/sections/recipe_ingredients_section.dart';
 import 'widgets/sections/recipe_steps_section.dart';
 

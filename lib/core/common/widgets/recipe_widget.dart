@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/core/common/widgets/profile_image_widget.dart';
 import 'like_button.dart';
 import '../../../injection/service_locator.dart';
 import '../../../features/recipes/data/model/recipe_model.dart';
 import '../bloc/like/like_bloc.dart';
+import 'profile_image_widget.dart';
 import 'recipe_action_bottom_drawer.dart';
 import 'recipe_image_widget.dart';
 
@@ -89,16 +89,14 @@ class RecipeWidget extends StatelessWidget {
                     Row(
                       children: [
                         ProfileImageWidget(
-                          source: recipe?.user?.photoURL ??
+                          initialSource: recipe.user?.photoURL ??
                               '', // Use photoURL if available; fallback to empty string
                           size:
                               avatarRadius * 2, // Diameter is twice the radius
                           placeholder: const Icon(Icons.person,
                               size: 50), // Icon for placeholder
                           errorWidget: const Icon(Icons.error,
-                              size: 50), // Icon for error handling
-                          useCloudinary: recipe?.user?.photoURL !=
-                              null, // Use Cloudinary only if photoURL is provided
+                              size: 50),// Use Cloudinary only if photoURL is provided
                         ),
                         const SizedBox(width: 8.0),
                         Expanded(

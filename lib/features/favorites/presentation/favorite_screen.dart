@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/core/common/widgets/recipe_widget.dart';
 import '../../../core/common/widgets/recipe_compact_widget.dart';
 import '../../../injection/service_locator.dart';
 import '../../../router/app_router.dart';

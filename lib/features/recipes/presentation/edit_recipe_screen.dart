@@ -3,16 +3,15 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:myapp/core/common/widgets/recipe_image_upload_widget.dart';
-import 'package:myapp/features/recipes/data/model/recipe_model.dart';
-import 'package:myapp/features/recipes/domain/recipe/recipe_bloc.dart';
-import 'package:myapp/features/recipes/presentation/widgets/edit_recipe/thumbnail_picker_edit.dart';
-import 'package:myapp/features/recipes/presentation/widgets/interactive_list.dart';
-import 'package:myapp/features/recipes/presentation/widgets/input_dialog.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 
 // Import constants
-import 'package:myapp/core/constants.dart';
+import '../../../core/common/widgets/recipe_image_upload_widget.dart';
+import '../../../core/constants.dart';
+import '../data/model/recipe_model.dart';
+import '../domain/recipe/recipe_bloc.dart';
+import 'widgets/input_dialog.dart';
+import 'widgets/interactive_list.dart';
 
 @RoutePage()
 class EditRecipeScreen extends StatefulWidget {
@@ -65,7 +64,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
     _uploadedImages = List<String>.from(widget.recipe.imageUrls);
     _thumbnailImage = widget.recipe.thumbnailUrl.isNotEmpty
         ? widget.recipe.thumbnailUrl
-        : null;
+        : widget.recipe.imageUrls.first ?? null;
 
     _selectedCategory = widget.recipe.category;
     _selectedCountry = widget.recipe.country;
@@ -123,17 +122,8 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
             child: ListView(
               children: [
                 const Text(
-                  'Thumbnail & Images',
+                  'Recipe Images',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 8),
-                ThumbnailPickerEdit(
-                  thumbnail: _thumbnailImage,
-                  onThumbnailSelected: (file) {
-                    setState(() {
-                      _thumbnailImage = file;
-                    });
-                  },
                 ),
                 const SizedBox(height: 10),
                 ImageUploadWidget(
@@ -147,31 +137,6 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                     });
                   },
                 ),
-                // ImageUploaderEdit(
-                //   uploadedImages: _uploadedImages,
-                //   onImagePicked: (file) {
-                //     setState(() {
-                //       imagesToAdd.add(file);
-                //       _uploadedImages.add(file);
-                //       _thumbnailImage ??= _uploadedImages.first;
-                //     });
-                //   },
-                //   onImageRemoved: (path) {
-                //     print(_uploadedImages);
-                //     setState(() {
-                //       imagesToDelete.add(path);
-                //       _uploadedImages.remove(path); // Remove specific image
-                //     });
-                //     print(_uploadedImages);
-                //   },
-                //   onClearImages: () {
-                //     setState(() {
-                //       imagesToAdd.clear();
-                //       _uploadedImages.clear();
-                //       _thumbnailImage = null;
-                //     });
-                //   },
-                // ),
                 const SizedBox(height: 20),
                 _buildSectionTitle('Details'),
                 TextFormField(
@@ -245,7 +210,6 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                 const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: () async {
-                    print(_thumbnailImage);
                     if (_formKey.currentState?.validate() ?? false) {
                       try {
                         // Call the RecipeUpdateService to handle the update
@@ -259,9 +223,8 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                           steps: _steps, // Example: List of steps
                           tags:
                               _tags, // Example: List of tags // Combine new and old images
-                          thumbnailUrl: _thumbnailImage ??
-                              widget.recipe
-                                  .thumbnailUrl, // New or existing thumbnail
+                          thumbnailUrl: _newImage.isNotEmpty
+                              ? _newImage.first.path : '', // New or existing thumbnail
                           youtubeVideoUrl: _youtubeUrlController.text,
                           category: _selectedCategory ?? '',
                           country: _selectedCountry ?? '',

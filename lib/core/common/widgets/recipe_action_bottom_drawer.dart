@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:myapp/router/app_router.dart';
 import '../../../features/recipes/data/model/recipe_model.dart';
+import '../../../router/app_router.dart';
 
 void showRecipeActions(
   BuildContext context,

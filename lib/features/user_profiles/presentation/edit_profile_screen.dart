@@ -1,19 +1,19 @@
-import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get_it/get_it.dart';
-import 'package:myapp/features/user_profiles/data/model/user_model.dart';
-import 'package:myapp/core/services/cloudinary_service.dart';
-import '../../../core/common/widgets/profile_image_widget.dart';
+import '../../../core/services/cloudinary_service.dart';
+import '../../../injection/service_locator.dart';
+import '../data/model/user_model.dart';
 import '../domain/profile/profile_bloc.dart';
+import 'widgets/profile_image_upload_widget.dart';
 
 @RoutePage()
 class EditProfileScreen extends StatefulWidget {
   final UserModel user;
 
-  const EditProfileScreen({required this.user, Key? key}) : super(key: key);
+  const EditProfileScreen({required this.user, super.key});
 
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
@@ -22,10 +22,10 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
-  final _cloudinaryService = GetIt.instance<CloudinaryService>();
+  final _cloudinaryService = getIt<CloudinaryService>();
 
   late TextEditingController _nameController;
-  File? _selectedImage;
+  XFile? _selectedImage;
   String? _photoURL;
 
   @override
@@ -47,35 +47,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        _selectedImage = pickedFile;
       });
     }
   }
 
   Future<void> _uploadImageAndSaveProfile() async {
     if (_formKey.currentState!.validate()) {
-      String? uploadedPhotoUrl;
-
       try {
-        // If a new image is selected, upload it to Cloudinary
-        if (_selectedImage != null) {
-          uploadedPhotoUrl =
-              await _cloudinaryService.uploadImage(_selectedImage!);
-        }
-
         // Prepare the updated profile
         final updatedProfile = UserModel(
           uid: widget.user.uid,
           email: widget.user.email,
           displayName: _nameController.text,
-          photoURL: uploadedPhotoUrl ?? _photoURL,
+          photoURL: _photoURL,
           createdAt: widget.user.createdAt,
         );
 
         // Dispatch the profile update event to the Bloc
-        context
-            .read<ProfileBloc>()
-            .add(UpdateProfile(updatedProfile: updatedProfile));
+        context.read<ProfileBloc>().add(UpdateProfile(
+            updatedProfile: updatedProfile, newPhoto: _selectedImage!));
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Image upload failed: ${e.toString()}')),
@@ -137,21 +128,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                GestureDetector(
-                  onTap: _showImageSourceSelection,
-                  child: ProfileImageWidget(
-                    source: _selectedImage != null
-                        ? _selectedImage!
-                            .path // Use local file path for selected image
-                        : (_photoURL ??
-                            ''), // Use photo URL or empty string if null
-                    size: 100, // Diameter of the profile image
-                    placeholder: const Icon(Icons.person, size: 50),
-                    errorWidget: const Icon(Icons.error, size: 50),
-                    useCloudinary: _selectedImage == null &&
-                        _photoURL !=
-                            null, // Use Cloudinary only if no local file is selected
-                  ),
+                ProfileImageUploadWidget(
+                  existingImageUrl: widget.user.photoURL,
+                  onImageUpdated: (image) {
+                    print("Selected Images: ${image!.path}");
+                    setState(() {
+                      _selectedImage = image;
+                    });
+                  }, // Use Cloudinary only if no local file is selected
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
