@@ -28,8 +28,7 @@ class FollowButtonWidget extends StatelessWidget {
         if (state is FollowStatusLoaded) {
           isFollowing = state.isFollowing;
         }
-        print(state);
-
+        
         return ElevatedButton(
           onPressed: () {
             if (isFollowing) {

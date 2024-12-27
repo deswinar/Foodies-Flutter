@@ -3,8 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../injection/service_locator.dart';
-import '../model/follower_model.dart';
-import '../model/following_model.dart';
 import '../model/user_model.dart';
 
 class FollowRepository {
@@ -120,7 +118,6 @@ class FollowRepository {
         return UserModel.fromMap(doc.data() as Map<String, dynamic>);
       }).toList();
     } catch (e) {
-      print(e);
       throw Exception('Failed to fetch following: $e');
     }
   }
@@ -173,7 +170,6 @@ class FollowRepository {
         return UserModel.fromMap(doc.data() as Map<String, dynamic>);
       }).toList();
     } catch (e) {
-      print(e);
       throw Exception('Failed to fetch followers: $e');
     }
   }

@@ -32,7 +32,7 @@ final getIt = GetIt.instance;
 
 void setupDependencies() {
   // Register FirebaseAuth as a lazy singleton
-  getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
+  getIt.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
   getIt.registerLazySingleton<FirebaseFirestore>(
       () => FirebaseFirestore.instance);
 

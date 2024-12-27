@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../injection/service_locator.dart';
@@ -23,9 +22,6 @@ class RecipeDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = getIt<FirebaseAuth>().currentUser;
-    print(userModel.displayName);
-
     context.read<RecipeBloc>().add(FetchRecipeByIdEvent(recipeId: recipe.id));
 
     return BlocBuilder<RecipeBloc, RecipeState>(builder: (context, state) {
@@ -100,6 +96,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                               return LikeButton(
                                 recipe: recipe,
                                 isLiked: likeState.isLiked,
+                                likeCount: likeState.likeCount,
                                 onLikeToggled: () {
                                   // Trigger the like/unlike event
                                   context.read<LikeBloc>().add(ToggleLike(
@@ -108,7 +105,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                                 },
                               );
                             } else if (likeState is LikeError) {
-                              return Icon(Icons.error, color: Colors.red);
+                              return const Icon(Icons.error, color: Colors.red);
                             }
                             return const SizedBox();
                           },

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   final List<String> _ingredients = [];
   final List<String> _steps = [];
   final List<String> _tags = [];
-  File? _thumbnailImage;
   List<XFile> _uploadedImages = [];
 
   String? _selectedCategory;
@@ -123,8 +121,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                   ImageUploadWidget(
                     onImagesUpdated: (images) {
                       // Handle the updated image list
-                      print(
-                          "Selected Images: ${images.map((e) => e.path).toList()}");
                       setState(() {
                         _uploadedImages = images;
                       });

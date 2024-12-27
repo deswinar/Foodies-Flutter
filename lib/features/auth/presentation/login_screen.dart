@@ -25,6 +25,7 @@ class LoginScreen extends StatelessWidget {
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state is AuthAuthenticated) {
+                // throw (state.user!.email!);
                 context.replaceRoute(const MainRoute());
               } else if (state is AuthError) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -33,6 +34,7 @@ class LoginScreen extends StatelessWidget {
               }
             },
             builder: (context, state) {
+              // throw (state);
               if (state is AuthLoading) {
                 return const Center(
                   child: CircularProgressIndicator(),

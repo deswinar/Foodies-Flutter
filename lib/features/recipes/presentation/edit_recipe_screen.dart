@@ -49,6 +49,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
   @override
   void initState() {
     super.initState();
+    print(widget.recipe);
 
     // Initialize fields with existing data
     _titleController = TextEditingController(text: widget.recipe.title ?? '');
@@ -62,9 +63,14 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
 
     // Use file paths (String) for image URLs and thumbnail
     _uploadedImages = List<String>.from(widget.recipe.imageUrls);
-    _thumbnailImage = widget.recipe.thumbnailUrl.isNotEmpty
-        ? widget.recipe.thumbnailUrl
-        : widget.recipe.imageUrls.first ?? null;
+    // Safely assign thumbnailImage
+    if (widget.recipe.thumbnailUrl.isNotEmpty) {
+      _thumbnailImage = widget.recipe.thumbnailUrl;
+    } else if (widget.recipe.imageUrls.isNotEmpty) {
+      _thumbnailImage = widget.recipe.imageUrls.first;
+    } else {
+      _thumbnailImage = null; // No valid image available
+    }
 
     _selectedCategory = widget.recipe.category;
     _selectedCountry = widget.recipe.country;
@@ -76,6 +82,8 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(_thumbnailImage);
+    // throw ("here");
     context
         .read<RecipeBloc>()
         .add(FetchRecipeByIdEvent(recipeId: widget.recipe.id));
@@ -86,7 +94,6 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
         );
         Navigator.of(context).pop(state.recipe); // Pass updated recipe
       } else if (state is RecipeErrorState) {
-        print("RecipeError");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(state.errorMessage)),
         );
@@ -130,8 +137,6 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                   existingImageUrls: widget.recipe.imageUrls,
                   onImagesUpdated: (images) {
                     // Handle the updated image list
-                    print(
-                        "Selected Images: ${images.map((e) => e.path).toList()}");
                     setState(() {
                       _newImage = images;
                     });
@@ -224,7 +229,8 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                           tags:
                               _tags, // Example: List of tags // Combine new and old images
                           thumbnailUrl: _newImage.isNotEmpty
-                              ? _newImage.first.path : '', // New or existing thumbnail
+                              ? _newImage.first.path
+                              : _thumbnailImage, // New or existing thumbnail
                           youtubeVideoUrl: _youtubeUrlController.text,
                           category: _selectedCategory ?? '',
                           country: _selectedCountry ?? '',
@@ -232,6 +238,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                           cookingDuration: _cookingDuration ?? '0',
                           updatedAt: DateTime.now(),
                         );
+                        print(_newImage);
 
                         context.read<RecipeBloc>().add(UpdateRecipeEvent(
                               oldRecipe: widget.recipe,
@@ -243,7 +250,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                         //     .pop(updatedRecipe); // Pass updated recipe
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error: ${e.toString()}')),
+                          SnackBar(content: Text('Errors: ${e.toString()}')),
                         );
                       }
                     }

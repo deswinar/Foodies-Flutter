@@ -2,9 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:get_it/get_it.dart';
-import '../../../core/services/cloudinary_service.dart';
-import '../../../injection/service_locator.dart';
 import '../data/model/user_model.dart';
 import '../domain/profile/profile_bloc.dart';
 import 'widgets/profile_image_upload_widget.dart';
@@ -21,8 +18,6 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final ImagePicker _picker = ImagePicker();
-  final _cloudinaryService = getIt<CloudinaryService>();
 
   late TextEditingController _nameController;
   XFile? _selectedImage;
@@ -43,15 +38,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = pickedFile;
-      });
-    }
-  }
-
   Future<void> _uploadImageAndSaveProfile() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -63,43 +49,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           photoURL: _photoURL,
           createdAt: widget.user.createdAt,
         );
-
-        // Dispatch the profile update event to the Bloc
-        context.read<ProfileBloc>().add(UpdateProfile(
-            updatedProfile: updatedProfile, newPhoto: _selectedImage!));
+        // print(updatedProfile);
+        if (_selectedImage != null) {
+          // Dispatch the profile update event to the Bloc
+          context.read<ProfileBloc>().add(UpdateProfile(
+              updatedProfile: updatedProfile, newPhoto: _selectedImage!));
+        } else {
+          context
+              .read<ProfileBloc>()
+              .add(UpdateProfile(updatedProfile: updatedProfile));
+        }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Image upload failed: ${e.toString()}')),
         );
       }
     }
-  }
-
-  void _showImageSourceSelection() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(Icons.camera_alt),
-            title: const Text('Camera'),
-            onTap: () {
-              Navigator.pop(context);
-              _pickImage(ImageSource.camera);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.photo),
-            title: const Text('Gallery'),
-            onTap: () {
-              Navigator.pop(context);
-              _pickImage(ImageSource.gallery);
-            },
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -131,7 +96,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ProfileImageUploadWidget(
                   existingImageUrl: widget.user.photoURL,
                   onImageUpdated: (image) {
-                    print("Selected Images: ${image!.path}");
                     setState(() {
                       _selectedImage = image;
                     });

@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "533416174933-gh253l980bb5dgis5atkv9cf19229960.apps.googleusercontent.com",
+          "client_id": "533416174933-7gjkncip52dlphaf8d7b2ldq2f20937e.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.arraya.foodies",
-            "certificate_hash": "b23c3a9377863a454807709048f2ad8a6f0e35dd"
+            "certificate_hash": "ae44bb4e5f592c68c883283cd56f60aad5bbc033"
           }
         },
         {

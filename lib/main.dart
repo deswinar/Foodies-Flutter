@@ -27,7 +27,7 @@ import 'firebase_options.dart';
 
 Future<void> _initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
+  await dotenv.load(fileName: 'assets/.env');
 
   if (dotenv.isInitialized) {
     print("Env file loaded successfully");
@@ -36,9 +36,19 @@ Future<void> _initializeApp() async {
   }
 
   // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // Check if Firebase is already initialized
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print("Firebase initialized successfully");
+  } catch (e) {
+    if (e is FirebaseException && e.code == 'duplicate-app') {
+      print("Firebase has already been initialized.");
+    } else {
+      print("Error initializing Firebase: $e");
+    }
+  }
 
   CloudinaryContext.cloudinary = Cloudinary.fromCloudName(cloudName: 'demo');
 
@@ -108,6 +118,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp.router(
+        title: 'foodies',
         debugShowCheckedModeBanner: false,
         routerConfig: AppRouter().config(),
         theme: ThemeData(

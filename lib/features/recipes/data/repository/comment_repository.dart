@@ -24,7 +24,6 @@ class CommentRepository {
           .map((doc) => Comment.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print(e);
       throw Exception('Failed to fetch comments: $e');
     }
   }

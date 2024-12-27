@@ -19,7 +19,6 @@ class UserList extends StatelessWidget {
         itemCount: userModels.length,
         itemBuilder: (context, index) {
           final user = userModels[index];
-          print(user.displayName);
           return ListTile(
             onTap: () {
               context.pushRoute(UserRecipesRoute(userModel: user));

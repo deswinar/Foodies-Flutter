@@ -182,13 +182,12 @@ class FeedWidget extends StatelessWidget {
         ),
         ListView.builder(
           shrinkWrap: true,
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: recipes.length,
           itemBuilder: (context, index) {
             final recipe = recipes[index];
             return GestureDetector(
               onTap: () {
-                print(recipe.user!.displayName);
                 context.pushRoute(RecipeDetailsRoute(
                     recipe: recipe, userModel: recipe.user!));
               },

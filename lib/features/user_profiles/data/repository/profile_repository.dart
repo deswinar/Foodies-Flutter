@@ -8,14 +8,14 @@ import '../../../../injection/service_locator.dart';
 import '../model/user_model.dart';
 
 class ProfileRepository {
-  final FirebaseFirestore firestore = getIt<FirebaseFirestore>();
-  final user = getIt<FirebaseAuth>().currentUser;
+  final FirebaseFirestore firestore = getIt<FirebaseFirestore>();  
 
   ProfileRepository();
 
   /// Fetch the profile of the current logged-in user
   Future<UserModel?> getProfile() async {
     try {
+      final user = getIt<FirebaseAuth>().currentUser;
       // Get the currently logged-in user
       if (user == null) {
         throw Exception('User is not logged in.');
@@ -32,21 +32,21 @@ class ProfileRepository {
       // Convert the Firestore document to a UserModel
       return UserModel.fromMap(docSnapshot.data() as Map<String, dynamic>);
     } catch (e) {
-      print('Error fetching user profile: $e');
       throw Exception('Failed to fetch user profile.');
     }
   }
 
   /// Update the profile of the current logged-in user
-  Future<void> updateProfile(UserModel updatedProfile, XFile newPhoto) async {
+  Future<void> updateProfile(UserModel updatedProfile, XFile? newPhoto) async {
     final cloudinaryService = getIt<CloudinaryService>();
     try {
+      final user = getIt<FirebaseAuth>().currentUser;
       // Ensure the user is logged in
       if (user == null) {
         throw Exception('User is not logged in.');
       }
 
-      if (newPhoto.path.isNotEmpty) {
+      if (newPhoto != null) {
         final imageUrl =
             await cloudinaryService.uploadImage(File(newPhoto.path));
         updatedProfile = updatedProfile.copyWith(photoURL: imageUrl);
@@ -58,8 +58,7 @@ class ProfileRepository {
           .doc(user?.uid)
           .update(updatedProfile.toMap());
     } catch (e) {
-      print('Error updating user profile: $e');
-      throw Exception('Failed to update user profile.');
+      throw Exception('Failed to update user profile. $e');
     }
   }
 }

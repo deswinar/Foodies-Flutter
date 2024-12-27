@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../domain/services/image_picker_helper.dart';
 
@@ -19,45 +17,6 @@ class ImageUploaderEdit extends StatelessWidget {
     required this.onImageRemoved,
     required this.onClearImages,
   });
-
-  Future<void> _pickImage(BuildContext context) async {
-    // Show dialog to choose between Gallery or Camera
-    final ImageSource? source = await showDialog<ImageSource>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Select Image Source"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo),
-              title: const Text("Gallery"),
-              onTap: () => Navigator.pop(context, ImageSource.gallery),
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text("Camera"),
-              onTap: () => Navigator.pop(context, ImageSource.camera),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    // If user selects a source, open the image picker
-    if (source != null) {
-      final pickedImage = await _showImagePicker(context);
-
-      if (pickedImage != null) {
-        onImagePicked(pickedImage); // Return the picked image (XFile or File)
-      }
-    }
-  }
-
-  bool _isValidUrl(String path) {
-    Uri uri = Uri.tryParse(path) ?? Uri();
-    return uri.isAbsolute && (uri.scheme == 'http' || uri.scheme == 'https');
-  }
 
   @override
   Widget build(BuildContext context) {

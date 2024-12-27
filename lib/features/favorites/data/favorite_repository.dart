@@ -86,7 +86,6 @@ class FavoriteRepository {
         return recipe; // If no user found, return recipe as is
       }).toList();
     } catch (e) {
-      print(e);
       throw Exception('Failed to fetch favorite recipes: $e');
     }
   }

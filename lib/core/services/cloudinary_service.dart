@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class CloudinaryException implements Exception {
@@ -15,13 +16,12 @@ class CloudinaryException implements Exception {
 }
 
 class CloudinaryService {
-  final String cloudName = 'djnfz4ehq'; // Loaded from .env
-  final String apiKey = ''; // Loaded from .env
-  final String apiSecret = ''; // Loaded from .env
+  final String cloudName = dotenv.env['CLOUDINARY_CLOUD_NAME']!; // Loaded from .env
+  final String apiKey = dotenv.env['CLOUDINARY_API_KEY']!; // Loaded from .env
+  final String apiSecret = dotenv.env['CLOUDINARY_API_SECRET']!; // Loaded from .env
 
   Future<String> uploadImage(File imageFile) async {
     final String url = 'https://api.cloudinary.com/v1_1/$cloudName/upload';
-    final String base64Auth = base64Encode(utf8.encode('$apiKey:$apiSecret'));
 
     try {
       final request = http.MultipartRequest('POST', Uri.parse(url));

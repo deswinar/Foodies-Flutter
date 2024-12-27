@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../features/auth/domain/auth_bloc.dart';
 import '../../features/favorites/presentation/favorite_screen.dart';
 import '../../features/feed/presentation/feed_screen.dart';
+import '../../features/user_profiles/domain/profile/profile_bloc.dart';
 import '../../features/user_profiles/presentation/profile_screen.dart';
+import '../../injection/service_locator.dart';
 import '../../router/app_router.dart';
 import 'bottom_nav_bar.dart';
 
@@ -33,13 +35,17 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthUnauthenticated) {
-          context.replaceRoute(LoginRoute());
-        }
-      },
-      child: Scaffold(
+    return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
+      if (state is AuthUnauthenticated) {
+        // context.read<ProfileBloc>().add(ProfileLogout());
+        context.replaceRoute(LoginRoute());
+      } else if (state is AuthAuthenticated) {
+        context.read<ProfileBloc>().add(FetchProfile());
+      }
+    }, builder: (context, state) {
+      // if (state is AuthAuthenticated) {
+      // throw (state is AuthAuthenticated ? state.user.email!:"");
+      return Scaffold(
         body: _screens[_currentIndex],
         bottomNavigationBar: BottomNavBar(
           currentIndex: _currentIndex,
@@ -54,7 +60,11 @@ class _MainScreenState extends State<MainScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation
             .miniEndFloat, // Move FAB to the bottom-right
-      ),
-    );
+      );
+      // context.read<ProfileBloc>().add(FetchProfile());
+      // } else {
+      //   return const Center(child: CircularProgressIndicator());
+      // }
+    });
   }
 }

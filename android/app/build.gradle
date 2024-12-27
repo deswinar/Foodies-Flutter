@@ -8,6 +8,12 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def keystoreProperties = new Properties()
+def keystoreFile = rootProject.file("key.properties")
+if (keystoreFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystoreFile))
+}
+
 android {
     namespace = "com.arraya.foodies"
     compileSdk = flutter.compileSdkVersion
@@ -35,10 +41,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('my-release-key.jks')
-            storePassword '12Ka09li52sari'
-            keyAlias 'my-key-alias'
-            keyPassword '12Ka09li52sari'
+            storeFile file(keystoreProperties["storeFile"])
+            storePassword keystoreProperties["storePassword"]
+            keyAlias keystoreProperties["keyAlias"]
+            keyPassword keystoreProperties["keyPassword"]
         }
     }
 

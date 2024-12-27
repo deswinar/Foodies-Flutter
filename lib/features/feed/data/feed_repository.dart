@@ -103,7 +103,6 @@ class FeedRepository {
         return recipe; // If no user found, return recipe as is
       }).toList();
     } catch (e) {
-      print(e);
       throw Exception('Failed to fetch recipes: $e');
     }
   }
@@ -193,7 +192,6 @@ class FeedRepository {
         return recipe; // If no user found, return recipe as is
       }).toList();
     } catch (e) {
-      print(e);
       throw Exception('Failed to fetch trending recipes: $e');
     }
   }
@@ -272,7 +270,6 @@ class FeedRepository {
 
       return recipes;
     } catch (e) {
-      print(e);
       throw Exception('Failed to search feeds by title: $e');
     }
   }

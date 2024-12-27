@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'like_button.dart';
@@ -22,12 +21,8 @@ class RecipeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = getIt<FirebaseAuth>().currentUser;
-    final currentUserId = user?.uid ?? '';
-
     return LayoutBuilder(
       builder: (context, constraints) {
-        double imageHeight = constraints.maxWidth * 0.5;
         double avatarRadius = constraints.maxWidth * 0.08;
 
         return Card(
@@ -96,7 +91,8 @@ class RecipeWidget extends StatelessWidget {
                           placeholder: const Icon(Icons.person,
                               size: 50), // Icon for placeholder
                           errorWidget: const Icon(Icons.error,
-                              size: 50),// Use Cloudinary only if photoURL is provided
+                              size:
+                                  50), // Use Cloudinary only if photoURL is provided
                         ),
                         const SizedBox(width: 8.0),
                         Expanded(
@@ -128,6 +124,7 @@ class RecipeWidget extends StatelessWidget {
                                 return LikeButton(
                                   recipe: recipe,
                                   isLiked: likeState.isLiked,
+                                  likeCount: likeState.likeCount,
                                   onLikeToggled: () {
                                     // Trigger the like/unlike event
                                     context.read<LikeBloc>().add(ToggleLike(

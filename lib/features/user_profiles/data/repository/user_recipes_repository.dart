@@ -80,7 +80,6 @@ class UserRecipeRepository {
         return recipe; // If no user found, return recipe as is
       }).toList();
     } catch (e) {
-      print('Error fetching user recipes: $e');
       throw Exception('Failed to fetch user recipes.');
     }
   }

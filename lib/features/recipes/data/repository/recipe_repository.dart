@@ -18,7 +18,6 @@ class RecipeRepository {
     List<String> newImageUrls = [];
 
     for (final image in imagesToAdd) {
-      print(image.toString());
       if (image is XFile) {
         final imageUrl = await cloudinaryService.uploadImage(File(image.path));
         newImageUrls.add(imageUrl);
@@ -65,34 +64,39 @@ class RecipeRepository {
   Future<Recipe> updateRecipe(
       Recipe oldRecipe, Recipe newRecipe, List<XFile> imagesToAdd) async {
     List<String> newImageUrls = [];
+    dynamic removedImageUrls = '';
 
-    for (final image in imagesToAdd) {
-      print(image.toString());
-      if (image is XFile) {
-        final imageUrl = await cloudinaryService.uploadImage(File(image.path));
-        newImageUrls.add(imageUrl);
-      } else {
-        throw Exception('Unsupported image type');
+    if (imagesToAdd.isNotEmpty) {
+      for (final image in imagesToAdd) {
+        if (image is XFile) {
+          final imageUrl =
+              await cloudinaryService.uploadImage(File(image.path));
+          newImageUrls.add(imageUrl);
+        } else {
+          throw Exception('Unsupported image type');
+        }
       }
+
+      removedImageUrls = oldRecipe.imageUrls
+          .where((url) => !newImageUrls.contains(url))
+          .toList();
+
+      newRecipe = newRecipe.copyWith(
+          imageUrls: newImageUrls, thumbnailUrl: newImageUrls.first);
     }
-
-    final removedImageUrls = oldRecipe.imageUrls
-        .where((url) => !newImageUrls.contains(url))
-        .toList();
-
-    newRecipe = newRecipe.copyWith(
-        imageUrls: newImageUrls, thumbnailUrl: newImageUrls.first);
 
     Map<String, dynamic> newRecipeMap = newRecipe.toMap();
 
     final docRef = firestore.collection('recipes').doc(oldRecipe.id);
     await docRef.update(newRecipeMap);
-    await docRef.update({
-      'imageUrls': FieldValue.arrayUnion(newImageUrls),
-    });
-    await docRef.update({
-      'imageUrls': FieldValue.arrayRemove(removedImageUrls),
-    });
+    if (imagesToAdd.isNotEmpty) {
+      await docRef.update({
+        'imageUrls': FieldValue.arrayUnion(newImageUrls),
+      });
+      await docRef.update({
+        'imageUrls': FieldValue.arrayRemove(removedImageUrls),
+      });
+    }
 
     final updatedRecipeSnapshot = await docRef.get();
     return Recipe.fromMap(updatedRecipeSnapshot.data() as Map<String, dynamic>)

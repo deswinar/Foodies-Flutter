@@ -21,7 +21,6 @@ class RecipeCompactWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Card(
       elevation: 3.0,
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -121,11 +120,13 @@ class RecipeCompactWidget extends StatelessWidget {
                       return LikeButton(
                         recipe: recipe,
                         isLiked: likeState.isLiked,
+                        likeCount: likeState.likeCount,
                         onLikeToggled: () {
                           context.read<LikeBloc>().add(ToggleLike(recipe.id));
                         },
                       );
                     } else if (likeState is LikeError) {
+                      print(likeState.message);
                       return const Icon(Icons.error, color: Colors.red);
                     }
                     return const SizedBox();

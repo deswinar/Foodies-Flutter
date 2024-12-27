@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../injection/service_locator.dart';
+
 class AuthRepository {
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -106,6 +108,7 @@ class AuthRepository {
         'uid': user.uid,
         'displayName': displayName, // Store displayName in Firestore
         'createdAt': FieldValue.serverTimestamp(),
+        'photoURL': '',
       });
     } catch (e) {
       throw Exception(

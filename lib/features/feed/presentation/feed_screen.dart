@@ -27,7 +27,6 @@ class FeedScreen extends StatelessWidget {
           true, // Ensure the keyboard doesn't cause layout issues
       body: RefreshIndicator(
         onRefresh: () async {
-          print("refresh");
           // Trigger the refresh event in the FeedBloc
           context.read<FeedBloc>().add(const RefreshFeed());
         },

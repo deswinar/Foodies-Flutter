@@ -28,7 +28,6 @@ class UserListScreen extends StatelessWidget {
         children: [
           BlocBuilder<UserListBloc, UserListState>(
             builder: (context, state) {
-              print(state);
               if (state is FetchUserListLoading) {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is FetchUserListLoaded) {
