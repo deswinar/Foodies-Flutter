@@ -15,7 +15,6 @@ import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/register_screen.dart';
 import '../features/recipes/data/model/recipe_model.dart';
 import '../features/user_profiles/data/model/user_model.dart';
-import 'auth_guard.dart';
 
 // The part directive must be after imports
 part 'app_router.gr.dart';

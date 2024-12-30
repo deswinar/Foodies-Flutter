@@ -36,7 +36,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
   String? _selectedCountry;
 
   String? _thumbnailImage;
-  late List<dynamic> _uploadedImages;
+
   late List<String> _ingredients;
   late List<String> _steps;
   late List<String> _tags;
@@ -62,7 +62,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
     _cookingDuration = widget.recipe.cookingDuration ?? '';
 
     // Use file paths (String) for image URLs and thumbnail
-    _uploadedImages = List<String>.from(widget.recipe.imageUrls);
+  
     // Safely assign thumbnailImage
     if (widget.recipe.thumbnailUrl.isNotEmpty) {
       _thumbnailImage = widget.recipe.thumbnailUrl;
@@ -238,7 +238,6 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                           cookingDuration: _cookingDuration ?? '0',
                           updatedAt: DateTime.now(),
                         );
-                        print(_newImage);
 
                         context.read<RecipeBloc>().add(UpdateRecipeEvent(
                               oldRecipe: widget.recipe,

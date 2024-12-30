@@ -1,11 +1,9 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/common/widgets/profile_image_widget.dart';
 import '../../../core/common/widgets/recipe_compact_widget.dart';
-import '../../../injection/service_locator.dart';
 import '../../../router/app_router.dart';
 import '../../auth/domain/auth_bloc.dart';
 import '../../recipes/data/model/recipe_model.dart';
@@ -225,7 +223,6 @@ class ProfileScreen extends StatelessWidget {
         final recipe = recipes[index];
         return GestureDetector(
             onTap: () {
-              print('Edit recipe tapped');
               context.pushRoute(EditRecipeRoute(recipe: recipe)).then((result) {
                 if (result != null && result is Recipe) {
                   context
