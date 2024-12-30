@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+import '../features/auth/presentation/forgot_password_screen.dart';
 import '../features/recipes/presentation/edit_recipe_screen.dart';
 import '../features/recipes/presentation/recipe_details_screen.dart';
 import '../features/user_profiles/presentation/edit_profile_screen.dart';
@@ -27,6 +28,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: MainRoute.page),
         AutoRoute(page: LoginRoute.page),
         AutoRoute(page: RegisterRoute.page),
+        AutoRoute(page: ForgotPasswordRoute.page),
         AutoRoute(page: FeedRoute.page),
         AutoRoute(page: RecipeDetailsRoute.page),
         AutoRoute(page: AddRecipeRoute.page),

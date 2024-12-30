@@ -29,12 +29,11 @@ class LoginScreen extends StatelessWidget {
                 context.replaceRoute(const MainRoute());
               } else if (state is AuthError) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message)),
+                  const SnackBar(content: Text("Email/Password is incorrect")),
                 );
               }
             },
             builder: (context, state) {
-              // throw (state);
               if (state is AuthLoading) {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -89,6 +88,14 @@ class LoginScreen extends StatelessWidget {
                       context.pushRoute(RegisterRoute());
                     },
                     child: const Text('Register'),
+                  ),
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () {
+                      context.pushRoute(
+                          ForgotPasswordRoute()); // Navigate to forgot password screen
+                    },
+                    child: const Text('Forgot Password?'),
                   ),
                   const SizedBox(height: 10),
                   AuthButton(

@@ -47,6 +47,14 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const FeedScreen(),
       );
     },
+    ForgotPasswordRoute.name: (routeData) {
+      final args = routeData.argsAs<ForgotPasswordRouteArgs>(
+          orElse: () => const ForgotPasswordRouteArgs());
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: ForgotPasswordScreen(key: args.key),
+      );
+    },
     LoginRoute.name: (routeData) {
       final args = routeData.argsAs<LoginRouteArgs>(
           orElse: () => const LoginRouteArgs());
@@ -218,6 +226,35 @@ class FeedRoute extends PageRouteInfo<void> {
   static const String name = 'FeedRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [ForgotPasswordScreen]
+class ForgotPasswordRoute extends PageRouteInfo<ForgotPasswordRouteArgs> {
+  ForgotPasswordRoute({
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+          ForgotPasswordRoute.name,
+          args: ForgotPasswordRouteArgs(key: key),
+          initialChildren: children,
+        );
+
+  static const String name = 'ForgotPasswordRoute';
+
+  static const PageInfo<ForgotPasswordRouteArgs> page =
+      PageInfo<ForgotPasswordRouteArgs>(name);
+}
+
+class ForgotPasswordRouteArgs {
+  const ForgotPasswordRouteArgs({this.key});
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'ForgotPasswordRouteArgs{key: $key}';
+  }
 }
 
 /// generated route for

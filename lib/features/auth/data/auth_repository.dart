@@ -99,6 +99,15 @@ class AuthRepository {
     return _firebaseAuth.currentUser;
   }
 
+  // Reset Password function
+  Future<void> resetPassword(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      throw Exception("Failed to send password reset email: ${e.toString()}");
+    }
+  }
+
   // Helper function to store user data in Firestore
   Future<void> _storeUserData(User user, String displayName) async {
     try {
